@@ -51,28 +51,39 @@ import com.qualcomm.robotcore.util.Range;
 @TeleOp(name="Robot: Teleop POV", group="Robot")
 public class RobotTeleopPOV_Linear extends LinearOpMode {
 
+    // PUBLIC:
     /* Declare OpMode members. */
     public DcMotor  leftDrive   = null;
     public DcMotor  rightDrive  = null;
 
-
-    double clawOffset = 0;
-
     public static final double MID_SERVO   =  0.5 ;
     public static final double CLAW_SPEED  = 0.02 ;                 // sets rate to move servo
 
+    // PRIVATE:
+    private double left;
+    private double right;
+    private double drive;
+    private double turn;
+    private double max;
+
+    private double clawOffset = 0;
+
+    private int counter = 0;
+
+    private boolean isSpinning = false;
+
     @Override
     public void runOpMode() {
-        double left;
-        double right;
-        double drive;
-        double turn;
-        double max;
 
+        Start();
+        Update();
+    }
+
+    private void Start()
+    {
         // Define and Initialize Motors
         leftDrive  = hardwareMap.get(DcMotor.class, "LeftDrive");
         rightDrive = hardwareMap.get(DcMotor.class, "RightDrive");
-
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -88,45 +99,112 @@ public class RobotTeleopPOV_Linear extends LinearOpMode {
         telemetry.addData(">", "Robot Ready.  Press START.");    //
         telemetry.update();
 
+        leftDrive.setTargetPosition(0);
+        rightDrive.setTargetPosition(0);
+
         // Wait for the game to start (driver presses START)
         waitForStart();
+    }
 
-        // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
+    private void Update()
+    {
+        // Run until the end of the match (driver presses STOP)
+        while (opModeIsActive())
+        {
+            Move();
+            UncontrollableSpin();
 
-            // Run wheels in POV mode (note: The joystick goes negative when pushed forward, so negate it)
-            // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
-            // This way it's also easy to just drive straight, or just turn.
-            drive = -gamepad1.left_stick_y;
-            turn  =  gamepad1.right_stick_x;
-
-            // Combine drive and turn for blended motion.
-            left  = drive + turn;
-            right = drive - turn;
-
-            // Normalize the values so neither exceed +/- 1.0
-            max = Math.max(Math.abs(left), Math.abs(right));
-            if (max > 1.0)
-            {
-                left /= max;
-                right /= max;
-            }
-
-            // Output the safe vales to the motor drives.
-            leftDrive.setPower(left);
-            rightDrive.setPower(right);
-
-            // Move both servos to new position.  Assume servos are mirror image of each other.
-
-
-            // Send telemetry message to signify robot running;
-            telemetry.addData("claw",  "Offset = %.2f", clawOffset);
-            telemetry.addData("left",  "%.2f", left);
-            telemetry.addData("right", "%.2f", right);
-            telemetry.update();
-
-            // Pace this loop so jaw action is reasonable speed.
-            sleep(50);
+            Telemetry();
         }
+    }
+
+    private void Move()
+    {
+        // Run wheels in POV mode (note: The joystick goes negative when pushed forward, so negate it)
+        // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
+        // This way it's also easy to just drive straight, or just turn.
+        drive = -gamepad1.left_stick_y;
+        turn  =  gamepad1.right_stick_x;
+
+        // Combine drive and turn for blended motion.
+        left  = drive + turn;
+        right = drive - turn;
+
+        // Normalize the values so neither exceed +/- 1.0
+        max = Math.max(Math.abs(left), Math.abs(right));
+        if (max > 1.0)
+        {
+            left /= max;
+            right /= max;
+        }
+
+        // Hand over input values to the motors.
+        leftDrive.setPower(left);
+        rightDrive.setPower(right);
+    }
+
+    private void UncontrollableSpin()
+    {
+        if (gamepad1.cross)
+        {
+            if (counter == 0)
+            {
+                isSpinning = true;
+                counter++;
+            }
+            else
+            {
+                isSpinning = false;
+                counter--;
+            }
+        }
+
+        if (isSpinning)
+        {
+            leftDrive.setPower(1);
+            rightDrive.setPower(-1);
+        }
+    }
+
+    private void Telemetry()
+    {
+        /*
+                telemetry.addLine("Pressed cross");
+
+                // 537.6
+
+                leftDrive.setTargetPosition(180);
+                // you have to set it to use the encoders after setting where you want it to go for some reason idk
+                leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                rightDrive.setTargetPosition(180);
+                rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                int leftTargetPosition = leftDrive.getTargetPosition();
+                int rightTargetPosition = rightDrive.getTargetPosition();
+                while (leftTargetPosition < leftDrive.getTargetPosition()){
+                    leftDrive.setPower(1);
+                }
+                while (rightTargetPosition < rightDrive.getTargetPosition()){
+                    rightDrive.setPower(1);
+                }
+        */
+
+
+        // Send telemetry message to signify robot running;
+        telemetry.addData("claw",  "Offset = %.2f", clawOffset);
+        telemetry.addData("left",  "%.2f", left);
+        telemetry.addData("right", "%.2f", right);
+
+        // Robot rotation telemetry
+        telemetry.addData("leftRot", leftDrive.getCurrentPosition());
+        telemetry.addData("rightRot", rightDrive.getCurrentPosition());
+
+        int midPoint = (leftDrive.getCurrentPosition() + rightDrive.getCurrentPosition()) / 2;
+        telemetry.addData("midPointRot", midPoint);
+
+        telemetry.update();
+
+        // Pace this loop so jaw action is reasonable speed.
+        sleep(50);
     }
 }
