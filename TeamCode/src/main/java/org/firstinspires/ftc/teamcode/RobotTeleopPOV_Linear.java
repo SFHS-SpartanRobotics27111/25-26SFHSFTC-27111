@@ -1,210 +1,37 @@
-/* Copyright (c) 2017 FIRST. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided that
- * the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list
- * of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice, this
- * list of conditions and the following disclaimer in the documentation and/or
- * other materials provided with the distribution.
- *
- * Neither the name of FIRST nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
- * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+package org.firstinspires.ftc.teamcode; //teamcode package is necessary for code to function with out it you are missing hella classes and libs
 
-package org.firstinspires.ftc.teamcode;
-
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
 
-/*
- * This OpMode executes a POV Game style Teleop for a direct drive robot
- * The code is structured as a LinearOpMode
- *
- * In this mode the left stick moves the robot FWD and back, the Right stick turns left and right.
- * It raises and lowers the arm using the Gamepad Y and A buttons respectively.
- * It also opens and closes the claws slowly using the left and right Bumper buttons.
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
- */
+//import all of our hardware classes. this makes adding new things easier without borking anything else
 
-@TeleOp(name="Robot: Teleop POV", group="Robot")
+import org.firstinspires.ftc.teamcode.hardware.OmniDrive;
+
+//TeleOp Parameter is needed to tell the control hub that it should show up in the TeleOp menu and not the Auto menu
+@TeleOp(name = "Field Centric Omni TeleOp", group = "Robot")
 public class RobotTeleopPOV_Linear extends LinearOpMode {
-
-    // PUBLIC:
-    /* Declare OpMode members. */
-    public DcMotor  leftDrive   = null;
-    public DcMotor  rightDrive  = null;
-
-    public static final double MID_SERVO   =  0.5 ;
-    public static final double CLAW_SPEED  = 0.02 ;                 // sets rate to move servo
-
-    // PRIVATE:
-    private double left;
-    private double right;
-    private double drive;
-    private double turn;
-    private double max;
-
-    private double clawOffset = 0;
-
-    private int counter = 0;
-
-    private boolean isSpinning = false;
-
     @Override
     public void runOpMode() {
+        // set up motors
+        OmniDrive drive = new OmniDrive(this);
 
-        Start();
-        Update();
-    }
 
-    private void Start()
-    {
-        // Define and Initialize Motors
-        leftDrive  = hardwareMap.get(DcMotor.class, "LeftDrive");
-        rightDrive = hardwareMap.get(DcMotor.class, "RightDrive");
+        // set up servos
 
-        // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
-        // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
-        // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
-        // leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        // Send telemetry message to signify robot waiting;
-        telemetry.addData(">", "Robot Ready.  Press START.");    //
+        telemetry.addData(">", "Setup complete. Press start");
         telemetry.update();
 
-        leftDrive.setTargetPosition(0);
-        rightDrive.setTargetPosition(0);
-
-        // Wait for the game to start (driver presses START)
         waitForStart();
-    }
 
-    private void Update()
-    {
-        // Run until the end of the match (driver presses STOP)
-        while (opModeIsActive())
-        {
-            Move();
-            UncontrollableSpin();
+        //main event loop. while the op mode is active we can take in the following inputs and turn it actions on the Bot
+        while (opModeIsActive()) {
+            // joystick y is negative for forward, so negate it
+            // labels are for Playstation controller but the library also has labels for Xbox controllers if you go back to it.
+            drive.driveFirstPerson(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.options);
 
-            Telemetry();
+
+            telemetry.update();
         }
-    }
-
-    private void Move()
-    {
-        // Run wheels in POV mode (note: The joystick goes negative when pushed forward, so negate it)
-        // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
-        // This way it's also easy to just drive straight, or just turn.
-        drive = -gamepad1.left_stick_y;
-        turn  =  gamepad1.right_stick_x;
-
-        // Combine drive and turn for blended motion.
-        left  = drive + turn;
-        right = drive - turn;
-
-        // Normalize the values so neither exceed +/- 1.0
-        max = Math.max(Math.abs(left), Math.abs(right));
-        if (max > 1.0)
-        {
-            left /= max;
-            right /= max;
-        }
-
-        // Hand over input values to the motors.
-        leftDrive.setPower(left);
-        rightDrive.setPower(right);
-    }
-
-    private void UncontrollableSpin()
-    {
-        if (gamepad1.cross)
-        {
-            if (counter == 0)
-            {
-                isSpinning = true;
-                counter++;
-            }
-            else
-            {
-                isSpinning = false;
-                counter--;
-            }
-        }
-
-        if (isSpinning)
-        {
-            leftDrive.setPower(1);
-            rightDrive.setPower(-1);
-        }
-    }
-
-    private void Telemetry()
-    {
-        /*
-                telemetry.addLine("Pressed cross");
-
-                // 537.6
-
-                leftDrive.setTargetPosition(180);
-                // you have to set it to use the encoders after setting where you want it to go for some reason idk
-                leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                rightDrive.setTargetPosition(180);
-                rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                int leftTargetPosition = leftDrive.getTargetPosition();
-                int rightTargetPosition = rightDrive.getTargetPosition();
-                while (leftTargetPosition < leftDrive.getTargetPosition()){
-                    leftDrive.setPower(1);
-                }
-                while (rightTargetPosition < rightDrive.getTargetPosition()){
-                    rightDrive.setPower(1);
-                }
-        */
-
-
-        // Send telemetry message to signify robot running;
-        telemetry.addData("claw",  "Offset = %.2f", clawOffset);
-        telemetry.addData("left",  "%.2f", left);
-        telemetry.addData("right", "%.2f", right);
-
-        // Robot rotation telemetry
-        telemetry.addData("leftRot", leftDrive.getCurrentPosition());
-        telemetry.addData("rightRot", rightDrive.getCurrentPosition());
-
-        int midPoint = (leftDrive.getCurrentPosition() + rightDrive.getCurrentPosition()) / 2;
-        telemetry.addData("midPointRot", midPoint);
-
-        telemetry.update();
-
-        // Pace this loop so jaw action is reasonable speed.
-        sleep(50);
     }
 }
