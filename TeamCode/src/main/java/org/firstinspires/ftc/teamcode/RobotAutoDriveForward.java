@@ -57,8 +57,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class RobotAutoDriveForward extends LinearOpMode {
 
     /* Declare OpMode members. */
-    private DcMotor         leftDrive   = null;
-    private DcMotor         rightDrive  = null;
+    private DcMotor         leftFront   = null;
+    private DcMotor         leftBack   = null;
+    private DcMotor         rightFront  = null;
+    private DcMotor         rightBack  = null;
 
     private ElapsedTime     runtime = new ElapsedTime();
 
@@ -69,14 +71,21 @@ public class RobotAutoDriveForward extends LinearOpMode {
     public void runOpMode() {
 
         // Initialize the drive system variables.
-        leftDrive  = hardwareMap.get(DcMotor.class, "leftDrive");
-        rightDrive = hardwareMap.get(DcMotor.class, "rightDrive");
+        rightFront  = hardwareMap.get(DcMotor.class, "right_front_drive");
+        rightFront = hardwareMap.get(DcMotor.class, "right_back_drive");
+        leftBack = hardwareMap.get(DcMotor.class, "left_back_drive");
+        leftFront = hardwareMap.get(DcMotor.class, "left_front_drive");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightDrive.setDirection(DcMotor.Direction.FORWARD);
+
+
+
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        rightBack.setDirection(DcMotor.Direction.FORWARD);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");    //
@@ -88,10 +97,12 @@ public class RobotAutoDriveForward extends LinearOpMode {
         // Step through each leg of the path, ensuring that the OpMode has not been stopped along the way.
 
         // Step 1:  Drive forward for 3 seconds
-        leftDrive.setPower(FORWARD_SPEED);
-        rightDrive.setPower(FORWARD_SPEED);
+        leftFront.setPower(FORWARD_SPEED);
+        rightFront.setPower(FORWARD_SPEED);
+        leftBack.setPower(FORWARD_SPEED);
+        rightBack.setPower(FORWARD_SPEED);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 3.0)) {
+        while (opModeIsActive() && (runtime.seconds() < 1.0)) {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
@@ -99,8 +110,10 @@ public class RobotAutoDriveForward extends LinearOpMode {
 
 
         // Step 4:  Stop
-        leftDrive.setPower(0);
-        rightDrive.setPower(0);
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
