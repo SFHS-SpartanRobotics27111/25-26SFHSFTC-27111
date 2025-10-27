@@ -72,7 +72,7 @@ public class RobotAutoDriveForward extends LinearOpMode {
 
         // Initialize the drive system variables.
         rightFront  = hardwareMap.get(DcMotor.class, "right_front_drive");
-        rightFront = hardwareMap.get(DcMotor.class, "right_back_drive");
+        rightBack = hardwareMap.get(DcMotor.class, "right_back_drive");
         leftBack = hardwareMap.get(DcMotor.class, "left_back_drive");
         leftFront = hardwareMap.get(DcMotor.class, "left_front_drive");
 
@@ -102,7 +102,7 @@ public class RobotAutoDriveForward extends LinearOpMode {
         leftBack.setPower(FORWARD_SPEED);
         rightBack.setPower(FORWARD_SPEED);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1.0)) {
+        while (opModeIsActive() && (runtime.seconds() < 0.3)) {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
