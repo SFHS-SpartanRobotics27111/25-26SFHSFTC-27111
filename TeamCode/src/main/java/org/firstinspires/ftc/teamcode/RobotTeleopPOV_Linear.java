@@ -14,9 +14,11 @@ public class RobotTeleopPOV_Linear extends LinearOpMode {
     public void runOpMode() {
         // set up motors
         OmniDrive drive = new OmniDrive(this);
+        // since the ending of auto will have a different orientation per which color you started in
+        // reset the yaw before doing anything else to avoid directions being cooked
+        drive.imu.resetYaw();
 
 
-        // set up servos
 
 
         telemetry.addData(">", "Setup complete. Press start");
