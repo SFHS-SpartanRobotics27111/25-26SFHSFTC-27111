@@ -53,8 +53,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Robot: Auto Drive By Time", group="Robot")
-public class RobotAutoDriveForward extends LinearOpMode {
+@Autonomous(name="Robot: Auto Drive Red Goal By Time", group="Robot")
+public class RobotAutoDriveRedGoal extends LinearOpMode {
 
     /* Declare OpMode members. */
     private DcMotor         leftFront   = null;
@@ -98,11 +98,11 @@ public class RobotAutoDriveForward extends LinearOpMode {
 
         // Step 1:  Drive forward for 3 seconds
         leftFront.setPower(FORWARD_SPEED);
-        rightFront.setPower(FORWARD_SPEED);
-        leftBack.setPower(FORWARD_SPEED);
+        rightFront.setPower(-FORWARD_SPEED);
+        leftBack.setPower(-FORWARD_SPEED);
         rightBack.setPower(FORWARD_SPEED);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.3)) {
+        while (opModeIsActive() && (runtime.seconds() < 1.2)) {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
