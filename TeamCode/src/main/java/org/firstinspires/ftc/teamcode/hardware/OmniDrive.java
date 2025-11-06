@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 //OmniDrive might get complicated
 public class OmniDrive {
+
     private final ElapsedTime runtime = new ElapsedTime();
     private final String LEFT_FRONT_DRIVE = "left_front_drive";
     private final String LEFT_BACK_DRIVE = "left_back_drive";
@@ -21,11 +22,13 @@ public class OmniDrive {
     public DcMotor leftBackDrive;
     public DcMotor rightFrontDrive;
     public DcMotor rightBackDrive;
+
     //IMU is an acronym for something you will have to google, it handles all the positioning stuff for holonomic driving to work
     public IMU imu;
 
-    //chonky ahh constructor
+    // chonky ahh constructor
     public OmniDrive(LinearOpMode op) {
+
         telemetry = op.telemetry;
         leftFrontDrive = op.hardwareMap.get(DcMotor.class, LEFT_FRONT_DRIVE);
         leftBackDrive = op.hardwareMap.get(DcMotor.class, LEFT_BACK_DRIVE);
@@ -51,10 +54,12 @@ public class OmniDrive {
                         RevHubOrientationOnRobot.UsbFacingDirection.LEFT
                 )
         );
-        imu.initialize(parameters);
+        imu.initialize(parameters); //TODO Parameters may have to be changed for Everybot
     }
+
     //our field centric drive. it has some simple trig, hope you know what a radian is
-    public void driveFirstPerson(double driveY, double driveX, double turn, boolean resetYaw) {
+    public void driveFirstPerson(double driveY, double driveX, double turn, boolean resetYaw)
+    {
         double max;
         
         //this the rotation of the robot in radians 

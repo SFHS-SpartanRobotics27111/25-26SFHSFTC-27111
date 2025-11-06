@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -53,8 +53,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Robot: Auto Drive Red Goal By Time", group="Robot")
-public class RobotAutoDriveRedGoal extends LinearOpMode {
+@Autonomous(name="Robot: Auto Drive Red Side Wall By Time", group="Robot")
+public class RobotAutoDriveRedSide extends LinearOpMode {
 
     /* Declare OpMode members. */
     private DcMotor         leftFront   = null;
@@ -97,12 +97,12 @@ public class RobotAutoDriveRedGoal extends LinearOpMode {
         // Step through each leg of the path, ensuring that the OpMode has not been stopped along the way.
 
         // Step 1:  Drive forward for 3 seconds
-        leftFront.setPower(FORWARD_SPEED);
-        rightFront.setPower(-FORWARD_SPEED);
-        leftBack.setPower(-FORWARD_SPEED);
-        rightBack.setPower(FORWARD_SPEED);
+        leftFront.setPower(-FORWARD_SPEED);
+        rightFront.setPower(FORWARD_SPEED);
+        leftBack.setPower(FORWARD_SPEED);
+        rightBack.setPower(-FORWARD_SPEED);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1.5)) {
+        while (opModeIsActive() && (runtime.seconds() < 0.6)) {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
