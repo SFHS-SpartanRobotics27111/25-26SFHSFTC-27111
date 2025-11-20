@@ -25,4 +25,9 @@ android {
 
 dependencies {
     implementation project(':FtcRobotController')
+
+    implementation 'dev.nextftc:ftc:1.0.1'
+    implementation 'dev.nextftc:hardware:1.0.1'
+
+    implementation 'dev.nextftc.extensions:pedro:1.0.0'
 }
