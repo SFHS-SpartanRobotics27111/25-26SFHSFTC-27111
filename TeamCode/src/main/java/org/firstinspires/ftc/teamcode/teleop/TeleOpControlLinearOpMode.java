@@ -162,7 +162,7 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
         rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // set direction of wheel motors
+        // set direction of wheel motors (IMPORTANT)
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -228,7 +228,7 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
 
             boolean catapultFireButton = gamepad1.right_bumper;
 
-            // DRIVE CODE
+            // DRIVE CODE (IMPORTANT)
             OmniDrive drive = new OmniDrive(this);
             drive.driveFirstPerson(
                     -gamepad1.left_stick_y,
