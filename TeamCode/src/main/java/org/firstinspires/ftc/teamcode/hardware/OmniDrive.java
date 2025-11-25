@@ -40,18 +40,18 @@ public class OmniDrive {
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightBackDrive.setDirection(DcMotor.Direction.REVERSE); // Originally FORWARD
 
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        //this lets the IMU know all the stuff needed for forward to be forward
+        //this lets the IMU know all the stuff needed for forward to be forward (IMPORTANT)
         IMU.Parameters parameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
-                        RevHubOrientationOnRobot.UsbFacingDirection.LEFT
+                        RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD, // Originally, UP and LEFT
+                        RevHubOrientationOnRobot.UsbFacingDirection.UP
                 )
         );
         imu.initialize(parameters); //TODO Parameters may have to be changed for Everybot
@@ -69,7 +69,7 @@ public class OmniDrive {
         double rotX = driveX * Math.cos(-botHeading) - driveY * Math.sin(-botHeading);
         double rotY = driveX * Math.sin(-botHeading) + driveY * Math.cos(-botHeading);
 
-        // normalizing value for some weird strafing behavior
+        //normalizing value for some weird strafing behavior
         rotX *= 1.1;
         // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
 
@@ -83,7 +83,7 @@ public class OmniDrive {
         double rightBackPower = (rotY + rotX - turn) / denominator;
 
         // Normalize the values so no wheel power exceeds 100%
-        // This ensures that the robot maintains the desired motion.
+        // This ensures that the robot maintains the desired motion
         max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
         max = Math.max(max, Math.abs(leftBackPower));
         max = Math.max(max, Math.abs(rightBackPower));
@@ -108,7 +108,9 @@ public class OmniDrive {
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime);
-        telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-        telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+        telemetry.addData("Front left", "%4.2f", leftFrontPower);
+        telemetry.addData("Front right", "%4.2f", rightFrontPower);
+        telemetry.addData("Back left", "%4.2f", leftBackPower);
+        telemetry.addData("Back right", "%4.2f", rightBackPower);
     }
 }
