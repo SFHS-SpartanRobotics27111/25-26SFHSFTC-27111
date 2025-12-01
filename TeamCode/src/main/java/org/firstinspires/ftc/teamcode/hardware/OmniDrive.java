@@ -40,7 +40,7 @@ public class OmniDrive {
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -50,7 +50,7 @@ public class OmniDrive {
         //this lets the IMU know all the stuff needed for forward to be forward
         IMU.Parameters parameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                        RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
                         RevHubOrientationOnRobot.UsbFacingDirection.LEFT
                 )
         );
@@ -69,7 +69,7 @@ public class OmniDrive {
         double rotX = driveX * Math.cos(-botHeading) - driveY * Math.sin(-botHeading);
         double rotY = driveX * Math.sin(-botHeading) + driveY * Math.cos(-botHeading);
 
-        //normalizing value for some weird strafing behavior
+        // normalizing value for some weird strafing behavior
         rotX *= 1.1;
         // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
 
