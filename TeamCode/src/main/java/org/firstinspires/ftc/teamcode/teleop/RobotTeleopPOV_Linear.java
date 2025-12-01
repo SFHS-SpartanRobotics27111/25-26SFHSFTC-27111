@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop; //teamcode package is necessary for code to function with out it you are missing hella classes and libs
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode.hardware.OmniDrive;
 
 //TeleOp Parameter is needed to tell the control hub that it should show up in the TeleOp menu and not the Auto menu
 @TeleOp(name = "Field Centric Omni TeleOp", group = "Robot")
+@Disabled
 public class RobotTeleopPOV_Linear extends LinearOpMode {
 
     @Override
