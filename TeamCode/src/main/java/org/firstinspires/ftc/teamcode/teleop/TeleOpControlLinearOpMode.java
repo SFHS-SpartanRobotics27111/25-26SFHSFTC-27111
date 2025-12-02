@@ -98,7 +98,7 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
 
     private double CATAPULT_UP_POWER = -1.0;
     private double CATAPULT_DOWN_POWER = 1.0;  // Need full power with 12 rubber bands. Half that amount can be adjusted to use 0.5 power.
-    private double CATAPULT_HOLD_POWER = 0.15; // Only use a small amount of power to hold it down once it is down, othewise the motor will get very hot from stalling and can damage itself
+    private double CATAPULT_HOLD_POWER = 0; // Only use a small amount of power to hold it down once it is down, othewise the motor will get very hot from stalling and can damage itself
 
     private enum CatapultModes {UP, DOWN, HOLD}
 
@@ -212,21 +212,21 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
     {
         while (opModeIsActive())
         {
-            boolean intakeInButton = gamepad1.left_trigger > 0.2;
-            boolean intakeOutButton = gamepad1.left_bumper;
+            boolean intakeInButton = gamepad2.left_trigger > 0.2;
+            boolean intakeOutButton = gamepad2.left_bumper;
 
             // This conditional reduces ambiguity when multiple buttons are pressed.
             if (intakeInButton && intakeOutButton) {
                 intakeInButton = false;
             }
 
-            boolean footOutButton = gamepad1.a;
-            boolean footUpButton = gamepad1.b;
+            boolean footOutButton = gamepad1.circle;
+            boolean footUpButton = gamepad1.cross;
             if (footOutButton && footUpButton) {
                 footOutButton = false;
             }
 
-            boolean catapultFireButton = gamepad1.right_bumper;
+            boolean catapultFireButton = gamepad2.right_bumper;
 
             // DRIVE CODE (IMPORTANT)
             OmniDrive drive = new OmniDrive(this);
@@ -268,7 +268,7 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
                 catapult1.setPower(CATAPULT_DOWN_POWER);
                 catapult2.setPower(CATAPULT_DOWN_POWER);
                 pivotDownTime.reset();
-            } else if (pivotMode == CatapultModes.DOWN && pivotDownTime.time() > 0.5) {
+            } else if (pivotMode == CatapultModes.DOWN && pivotDownTime.time() > 0.4) {
                 pivotMode = CatapultModes.HOLD;
                 catapult1.setPower(CATAPULT_HOLD_POWER);
                 catapult2.setPower(CATAPULT_HOLD_POWER);
