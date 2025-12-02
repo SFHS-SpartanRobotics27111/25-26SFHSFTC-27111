@@ -86,7 +86,7 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
 
     // motor power 1 = 100% and 0.5 = 50%
     // negative values = reverse ex: -0.5 = reverse 50%
-    private double INTAKE_IN_POWER = 1.0;
+    private double INTAKE_IN_POWER = 0.7;
     private double INTAKE_OUT_POWER = -0.9;
     private double INTAKE_OFF_POWER = 0.0;
     private double intakePower = INTAKE_OFF_POWER;
