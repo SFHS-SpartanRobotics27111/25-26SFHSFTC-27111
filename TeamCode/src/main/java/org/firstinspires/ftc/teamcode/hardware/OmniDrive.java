@@ -11,7 +11,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 //OmniDrive might get complicated
 public class OmniDrive {
-
     private final ElapsedTime runtime = new ElapsedTime();
     private final String LEFT_FRONT_DRIVE = "left_front_drive";
     private final String LEFT_BACK_DRIVE = "left_back_drive";
@@ -22,13 +21,11 @@ public class OmniDrive {
     public DcMotor leftBackDrive;
     public DcMotor rightFrontDrive;
     public DcMotor rightBackDrive;
-
     //IMU is an acronym for something you will have to google, it handles all the positioning stuff for holonomic driving to work
     public IMU imu;
 
-    // chonky ahh constructor
+    //chonky ahh constructor
     public OmniDrive(LinearOpMode op) {
-
         telemetry = op.telemetry;
         leftFrontDrive = op.hardwareMap.get(DcMotor.class, LEFT_FRONT_DRIVE);
         leftBackDrive = op.hardwareMap.get(DcMotor.class, LEFT_BACK_DRIVE);
@@ -40,7 +37,7 @@ public class OmniDrive {
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -50,26 +47,24 @@ public class OmniDrive {
         //this lets the IMU know all the stuff needed for forward to be forward
         IMU.Parameters parameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
+                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
                         RevHubOrientationOnRobot.UsbFacingDirection.LEFT
                 )
         );
-        imu.initialize(parameters); //TODO Parameters may have to be changed for Everybot
+        imu.initialize(parameters);
     }
-
     //our field centric drive. it has some simple trig, hope you know what a radian is
-    public void driveFirstPerson(double driveY, double driveX, double turn, boolean resetYaw)
-    {
+    public void driveFirstPerson(double driveY, double driveX, double turn, boolean resetYaw) {
         double max;
-        
-        //this the rotation of the robot in radians 
+
+        //this the rotation of the robot in radians
         double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
         //calculate the transformation so forward continues to be forward even when turned
         double rotX = driveX * Math.cos(-botHeading) - driveY * Math.sin(-botHeading);
         double rotY = driveX * Math.sin(-botHeading) + driveY * Math.cos(-botHeading);
 
-        // normalizing value for some weird strafing behavior
+        //normalizing value for some weird strafing behavior
         rotX *= 1.1;
         // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
 
