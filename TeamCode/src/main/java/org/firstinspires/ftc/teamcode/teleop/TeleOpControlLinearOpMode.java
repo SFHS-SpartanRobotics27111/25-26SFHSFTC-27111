@@ -267,7 +267,7 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
                 catapult1.setPower(CATAPULT_DOWN_POWER);
                 catapult2.setPower(CATAPULT_DOWN_POWER);
                 pivotDownTime.reset();
-            } else if (pivotMode == CatapultModes.DOWN && pivotDownTime.time() > 0.4) {
+            } else if (pivotMode == CatapultModes.DOWN && pivotDownTime.time() > 0.1) {
                 pivotMode = CatapultModes.HOLD;
                 catapult1.setPower(CATAPULT_HOLD_POWER);
                 catapult2.setPower(CATAPULT_HOLD_POWER);
