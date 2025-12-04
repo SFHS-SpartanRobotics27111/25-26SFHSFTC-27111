@@ -86,13 +86,13 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
 
     // motor power 1 = 100% and 0.5 = 50%
     // negative values = reverse ex: -0.5 = reverse 50%
-    private double INTAKE_IN_POWER = 0.7;
+    private double INTAKE_IN_POWER = 0.6;
     private double INTAKE_OUT_POWER = -0.9;
     private double INTAKE_OFF_POWER = 0.0;
     private double intakePower = INTAKE_OFF_POWER;
 
-    private double FOOT_UP_POWER = 1.0;
-    private double FOOT_DOWN_POWER = -0.85;
+    private double FOOT_UP_POWER = 0.2;
+    private double FOOT_DOWN_POWER = -0.2;
     private double FOOT_OFF_POWER = 0.0;
     private double footPower = FOOT_OFF_POWER;
 
@@ -220,12 +220,6 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
                 intakeInButton = false;
             }
 
-            boolean footOutButton = gamepad1.circle;
-            boolean footUpButton = gamepad1.cross;
-            if (footOutButton && footUpButton) {
-                footOutButton = false;
-            }
-
             boolean catapultFireButton = gamepad2.right_bumper;
 
             // DRIVE CODE (IMPORTANT)
@@ -246,6 +240,10 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
                 intakePower = INTAKE_OFF_POWER;
             }
 
+            boolean footOutButton = gamepad1.circle;
+            boolean footUpButton = gamepad1.cross;
+            boolean footOffButton = gamepad1.square;
+
             // FOOT CODE
             if (footOutButton) {
                 footmode = FootMode.DOWN;
@@ -253,8 +251,9 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
             } else if (footUpButton) {
                 footmode = FootMode.UP;
                 footPower = FOOT_UP_POWER;
-            } else {
+            } else if (footOffButton) {
                 footmode = FootMode.BRAKE;
+                footPower = FOOT_OFF_POWER;
             }
 
             // PIVOT MODE
