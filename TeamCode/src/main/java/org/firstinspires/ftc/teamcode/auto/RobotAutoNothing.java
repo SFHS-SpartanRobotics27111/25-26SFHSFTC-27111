@@ -91,8 +91,6 @@ public class RobotAutoNothing extends LinearOpMode {
 
         // Step through each leg of the path, ensuring that the OpMode has not been stopped along the way.
 
-
-
         // Step 4:  Stop
         leftFront.setPower(0);
         leftBack.setPower(0);
