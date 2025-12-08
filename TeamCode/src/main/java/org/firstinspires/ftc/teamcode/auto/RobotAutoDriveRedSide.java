@@ -53,7 +53,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Robot: Auto Drive Red Side Wall By Time", group="Robot")
+@Autonomous(name="Robot: Auto Drive Side Wall By Time", group="Robot")
 public class RobotAutoDriveRedSide extends LinearOpMode {
 
     /* Declare OpMode members. */

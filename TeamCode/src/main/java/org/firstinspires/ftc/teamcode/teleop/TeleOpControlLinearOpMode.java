@@ -98,7 +98,7 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
 
     private double CATAPULT_UP_POWER = -1.0;
     private double CATAPULT_DOWN_POWER = 1.0;  // Need full power with 12 rubber bands. Half that amount can be adjusted to use 0.5 power.
-    private double CATAPULT_HOLD_POWER = 0; // Only use a small amount of power to hold it down once it is down, othewise the motor will get very hot from stalling and can damage itself
+    private double CATAPULT_HOLD_POWER = 0.2; // Only use a small amount of power to hold it down once it is down, othewise the motor will get very hot from stalling and can damage itself
 
     private enum CatapultModes {UP, DOWN, HOLD}
 
