@@ -9,6 +9,7 @@ import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -18,7 +19,10 @@ public class Constants
     public static FollowerConstants followerConstants = new FollowerConstants()
         .mass(13.6078)
         .lateralZeroPowerAcceleration(-62.18029)
-        .forwardZeroPowerAcceleration(-32.5755);
+        .forwardZeroPowerAcceleration(-32.5755)
+        .translationalPIDFCoefficients(new com.pedropathing.control.PIDFCoefficients(0.1, 0, 0.01, 0))
+        .headingPIDFCoefficients(new com.pedropathing.control.PIDFCoefficients(1,0,0.03, 0));
+
 
     // What conditions a path ends
     public static PathConstraints pathConstraints = new PathConstraints(
