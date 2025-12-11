@@ -21,7 +21,9 @@ public class Constants
         .lateralZeroPowerAcceleration(-62.18029)
         .forwardZeroPowerAcceleration(-32.5755)
         .translationalPIDFCoefficients(new com.pedropathing.control.PIDFCoefficients(0.1, 0, 0.01, 0))
-        .headingPIDFCoefficients(new com.pedropathing.control.PIDFCoefficients(1,0,0.03, 0));
+        .headingPIDFCoefficients(new com.pedropathing.control.PIDFCoefficients(1,0,0.03, 0))
+        .drivePIDFCoefficients(new com.pedropathing.control.FilteredPIDFCoefficients(0.025, 0,0.0003, 0.6, 0.01));
+
 
 
     // What conditions a path ends

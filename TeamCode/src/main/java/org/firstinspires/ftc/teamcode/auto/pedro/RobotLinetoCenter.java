@@ -47,6 +47,7 @@ public class RobotLinetoCenter extends OpMode {
         panelsTelemetry.debug("X", follower.getPose().getX());
         panelsTelemetry.debug("Y", follower.getPose().getY());
         panelsTelemetry.debug("Heading", follower.getPose().getHeading());
+
         panelsTelemetry.update(telemetry);
     }
 
@@ -54,20 +55,32 @@ public class RobotLinetoCenter extends OpMode {
 
         public PathChain Path1;
         public PathChain Path2;
+        public PathChain curve;
 
         public Paths(Follower follower) {
             Path1 = follower
                     .pathBuilder()
-                    .addPath(new BezierLine(new Pose(9, 9), new Pose(72.000, 72.000)))
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(90))
+                    .addPath(new BezierLine(new Pose(9, 9), new Pose(130, 9)))
+                    .setConstantHeadingInterpolation(Math.toRadians(0))
                     .build();
 
             Path2 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(72.000, 72.000), new Pose(133.000, 11.000))
+                            new BezierLine(new Pose(63, 63), new Pose(63, 32))
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(90))
+                    .build();
+            curve = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierCurve(
+                                    new Pose(9.000, 9.000),
+                                    new Pose(43, 70.000),
+                                    new Pose(25, 120)
+                            )
+                    )
+                    .setTangentHeadingInterpolation()
                     .build();
         }
     }
@@ -78,9 +91,21 @@ public class RobotLinetoCenter extends OpMode {
         // Refer to the Pedro Pathing Docs (Auto Example) for an example state machine
         switch (pathState) {
             case 0:
-                follower.followPath(paths.Path1);
+                follower.followPath(paths.curve);
+                pathState = 1; // this needs to be set otherwise it shutters BAD
+
+                break;
             case 1:
-                follower.followPath(paths.Path2);
+                panelsTelemetry.debug("Path completed");
+                panelsTelemetry.update();
+                    break;
+
+
+
+            case 2:
+                panelsTelemetry.debug("Path completed");
+                panelsTelemetry.update();
+
         }
         return pathState;
     }
