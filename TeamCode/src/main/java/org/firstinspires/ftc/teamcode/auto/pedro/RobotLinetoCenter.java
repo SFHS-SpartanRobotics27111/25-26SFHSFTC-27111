@@ -28,7 +28,7 @@ public class RobotLinetoCenter extends OpMode {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(9, 9, Math.toRadians(0)));
+        follower.setStartingPose(new Pose(72, 8, Math.toRadians(90)));
         follower.activateAllPIDFs();
 
         paths = new Paths(follower); // Build paths
@@ -60,8 +60,10 @@ public class RobotLinetoCenter extends OpMode {
         public Paths(Follower follower) {
             Path1 = follower
                     .pathBuilder()
-                    .addPath(new BezierLine(new Pose(9, 9), new Pose(130, 9)))
-                    .setConstantHeadingInterpolation(Math.toRadians(0))
+                    .addPath(
+                            new BezierLine(new Pose(72.000, 8.000), new Pose(72.000, 72.000))
+                    )
+                    .setConstantHeadingInterpolation(Math.toRadians(90))
                     .build();
 
             Path2 = follower
@@ -91,7 +93,7 @@ public class RobotLinetoCenter extends OpMode {
         // Refer to the Pedro Pathing Docs (Auto Example) for an example state machine
         switch (pathState) {
             case 0:
-                follower.followPath(paths.curve);
+                follower.followPath(paths.Path1);
                 pathState = 1; // this needs to be set otherwise it shutters BAD
 
                 break;
