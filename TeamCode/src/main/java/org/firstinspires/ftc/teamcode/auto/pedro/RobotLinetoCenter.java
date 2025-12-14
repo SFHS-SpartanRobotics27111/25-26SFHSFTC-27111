@@ -61,9 +61,9 @@ public class RobotLinetoCenter extends OpMode {
             Path1 = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(72.000, 8.000), new Pose(72.000, 72.000))
+                            new BezierLine(new Pose(72.000, 8.000), new Pose(25, 126))
                     )
-                    .setConstantHeadingInterpolation(Math.toRadians(90))
+                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(138))
                     .build();
 
             Path2 = follower

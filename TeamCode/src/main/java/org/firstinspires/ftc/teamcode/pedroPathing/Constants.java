@@ -65,8 +65,8 @@ public class Constants
 
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(4.625)
-            .strafePodX(-2.375)
+            .forwardPodY(2.335)
+            .strafePodX(-3.780)
 
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName("pinpoint") // CHANGE LATER
