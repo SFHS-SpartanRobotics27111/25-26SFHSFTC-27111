@@ -86,13 +86,13 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
 
     // motor power 1 = 100% and 0.5 = 50%
     // negative values = reverse ex: -0.5 = reverse 50%
-    private double INTAKE_IN_POWER = 0.6;
+    private double INTAKE_IN_POWER = 1;
     private double INTAKE_OUT_POWER = -0.9;
     private double INTAKE_OFF_POWER = 0.0;
     private double intakePower = INTAKE_OFF_POWER;
 
     private double FOOT_UP_POWER = 0.2;
-    private double FOOT_DOWN_POWER = -0.2;
+    private double FOOT_DOWN_POWER = -0.6;
     private double FOOT_OFF_POWER = 0.0;
     private double footPower = FOOT_OFF_POWER;
 
@@ -267,7 +267,7 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
                 catapult1.setPower(CATAPULT_DOWN_POWER);
                 catapult2.setPower(CATAPULT_DOWN_POWER);
                 pivotDownTime.reset();
-            } else if (pivotMode == CatapultModes.DOWN && pivotDownTime.time() > 0.1) {
+            } else if (pivotMode == CatapultModes.DOWN && pivotDownTime.time() > 0.25) {
                 pivotMode = CatapultModes.HOLD;
                 catapult1.setPower(CATAPULT_HOLD_POWER);
                 catapult2.setPower(CATAPULT_HOLD_POWER);

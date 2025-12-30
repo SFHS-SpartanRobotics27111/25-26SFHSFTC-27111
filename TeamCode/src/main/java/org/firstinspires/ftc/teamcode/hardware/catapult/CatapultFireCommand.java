@@ -48,7 +48,7 @@ public class CatapultFireCommand extends Command {
             catapult.setPower(CatapultSubsystem.POWER_DOWN); // Should be 1.0
             timer.reset();
         }
-        else if (stage == Stage.RESETTING && timer.seconds() > 0.1) {
+        else if (stage == Stage.RESETTING && timer.seconds() > 0.25) {
             stage = Stage.COMPLETE;
         }
     }

@@ -22,7 +22,7 @@ public class intakeCommand extends Command {
     @Override
     public void start() {
         timer.reset();
-        intake.runIntake(0.8);
+        intake.runIntake(1);
     }
 
     // RENAMED: execute() -> onExecute()
