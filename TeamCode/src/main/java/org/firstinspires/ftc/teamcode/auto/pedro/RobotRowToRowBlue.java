@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.auto.pedro;
 
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.BezierPoint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -25,18 +27,37 @@ import dev.nextftc.core.commands.CommandManager;
 
 @Autonomous(name = "Pedro Pathing Row to Row", group = "Autonomous")
 @Configurable
-public class RobotRowToRow extends OpMode
+public class RobotRowToRowBlue extends OpMode
 {
     public Follower follower; // Pedro Pathing follower instance
     private Paths paths; // Paths defined in the Paths class
-    private int pathState; // Current autonomous path state (state machine)
 
     private IntakeSubsystem intake;
     private CatapultSubsystem catapult;
 
     private TelemetryManager panelsTelemetry; // Panels Telemetry instance
 
-    private ElapsedTime timer;
+    private ElapsedTime timer = new ElapsedTime();
+
+    public enum AutoState
+    {
+        INIT_SHOT,
+        INIT_SHOT_WAIT,
+
+        INTAKE_0,
+        INTAKE_0_SHOOT,
+        INTAKE_0_WAIT,
+
+        INTAKE_1,
+        INTAKE_1_SHOOT,
+        INTAKE_1_WAIT,
+
+        INTAKE_2,
+        INTAKE_2_SHOOT,
+
+        TELEMETRY
+    }
+    private AutoState pathState = AutoState.INIT_SHOT; // Current autonomous path state (state machine)
 
     @Override
     public void init()
@@ -78,6 +99,7 @@ public class RobotRowToRow extends OpMode
 
     public static class Paths
     {
+        public PathChain init_shot;
         public PathChain row0;
         public PathChain rowShoot0;
         public PathChain row1;
@@ -89,7 +111,6 @@ public class RobotRowToRow extends OpMode
         {
             // Defining runnables (lambda functions) externally to make things look cleaner
             Runnable intakePhase = () -> {
-                catapult.setPower(CatapultSubsystem.POWER_HOLD); // prevents the catapult from snapping up
                 CommandManager.INSTANCE.scheduleCommand((new intakeCommand(intake, 5)));
             };
 
@@ -97,19 +118,27 @@ public class RobotRowToRow extends OpMode
                 CommandManager.INSTANCE.scheduleCommand(new CatapultFireCommand(catapult, telemetry));
             };
 
+            // Empty path for just shooting
+            init_shot = follower
+                    .pathBuilder()
+                    .addParametricCallback(0.01, () -> {
+                        catapult.setPower(CatapultSubsystem.POWER_HOLD); // prevents the catapult from snapping up
+                    })
+                    .addParametricCallback(0.99, shootPhase)
+                    .build();
+
             // Each row represents robot moving to row of 3 artifacts and intaking them
             row0 = follower
                     .pathBuilder()
                     .addPath(
                             new BezierCurve(
                                     new Pose(24.000, 120.000),
-                                    new Pose(84.000, 95.851),
-                                    new Pose(22.000, 80)
+                                    new Pose(80, 80),
+                                    new Pose(22.000, 74)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
-                    .addParametricCallback(0.01, shootPhase)
-                    .addParametricCallback(0.02, intakePhase)
+                    .addParametricCallback(0.5, intakePhase)
                     .build();
 
             // Each row shoot represents path robot takes to go shoot the artifacts
@@ -136,7 +165,7 @@ public class RobotRowToRow extends OpMode
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
-                    .addParametricCallback(0.01, intakePhase)
+                    .addParametricCallback(0.6, intakePhase)
                     .build();
 
             rowShoot1 = follower
@@ -162,7 +191,7 @@ public class RobotRowToRow extends OpMode
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
-                    .addParametricCallback(0.01, intakePhase)
+                    .addParametricCallback(0.7, intakePhase)
                     .build();
 
             rowShoot2 = follower
@@ -182,50 +211,103 @@ public class RobotRowToRow extends OpMode
 
     // Pathing state machine
     // Manages each part of the auto routine
-    public int autonomousPathUpdate()
+    public AutoState autonomousPathUpdate()
     {
         switch (pathState)
         {
-            case 0:
-                follower.followPath(paths.row0, 0.7, true);
-                pathState = 1;
+            // ---------------------------------------------------------------------------
+
+            // Initial shot with pre-loaded artifacts
+            case INIT_SHOT:
+                follower.followPath(paths.init_shot, 0.7, true);
+                pathState = AutoState.INIT_SHOT_WAIT;
                 break;
-            case 1:
+            case INIT_SHOT_WAIT:
+                if (!follower.isBusy())
+                {
+                    timer.reset();
+                    pathState = AutoState.INTAKE_0;
+                }
+                break;
+
+            // ---------------------------------------------------------------------------
+
+            // First intake and shot
+            case INTAKE_0:
+                if (timer.time() > 1)
+                {
+                    follower.followPath(paths.row0, 0.7, true);
+                    pathState = AutoState.INTAKE_0_SHOOT;
+                }
+                break;
+
+            case INTAKE_0_SHOOT:
                 if (!follower.isBusy())
                 {
                     follower.followPath(paths.rowShoot0, 0.7, true);
-                    pathState = 2;
+                    timer.reset();
+                    pathState = AutoState.INTAKE_0_WAIT;
                 }
                 break;
-            case 2:
+            case INTAKE_0_WAIT:
                 if (!follower.isBusy())
                 {
-                    follower.followPath(paths.row1, 0.7, true);
-                    pathState = 3;
+                    timer.reset();
+                    pathState = AutoState.INTAKE_1;
                 }
                 break;
-            case 3:
+
+            // ---------------------------------------------------------------------------
+
+            // Second intake and shot
+            case INTAKE_1:
+                if (timer.time() > 1)
+                {
+                    follower.followPath(paths.row1, 0.7, true);
+                    pathState = AutoState.INTAKE_1_SHOOT;
+                }
+                break;
+
+            case INTAKE_1_SHOOT:
                 if (!follower.isBusy())
                 {
                     follower.followPath(paths.rowShoot1, 0.7, true);
-                    pathState = 4;
+                    timer.reset();
+                    pathState = AutoState.INTAKE_1_WAIT;
                 }
                 break;
-            case 4:
+            case INTAKE_1_WAIT:
                 if (!follower.isBusy())
                 {
-                    follower.followPath(paths.row2, 0.7, true);
-                    pathState = 5;
+                    timer.reset();
+                    pathState = AutoState.INTAKE_2;
                 }
                 break;
-            case 5:
+
+            // ---------------------------------------------------------------------------
+
+            // Third intake and shot
+            case INTAKE_2:
+                if (timer.time() > 1)
+                {
+                    follower.followPath(paths.row2, 0.7, true);
+                    pathState = AutoState.INTAKE_2_SHOOT;
+                }
+                break;
+
+            case INTAKE_2_SHOOT:
                 if (!follower.isBusy())
                 {
                     follower.followPath(paths.rowShoot2, 0.7, true);
-                    pathState = 6;
+                    timer.reset();
+                    pathState = AutoState.TELEMETRY;
                 }
                 break;
-            case 6:
+
+            // ---------------------------------------------------------------------------
+
+            // The end
+            case TELEMETRY:
                 if (!follower.isBusy()) {
                     panelsTelemetry.update();
                 }

@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.hardware.catapult.CatapultSubsystem;
 import org.firstinspires.ftc.teamcode.hardware.intake.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.hardware.intake.intakeCommand;
+
 import dev.nextftc.core.commands.CommandManager;
 
 @Autonomous(name = "Pedro Pathing Line to Center", group = "Autonomous")
@@ -114,7 +115,7 @@ public class RobotLinetoCenter extends OpMode {
                     .addParametricCallback(0.99, () -> {
                         CommandManager.INSTANCE.scheduleCommand(new CatapultFireCommand(catapult, telemetry));
 
-            })
+                    })
                     .build();
         }
     }
@@ -127,25 +128,23 @@ public class RobotLinetoCenter extends OpMode {
             case 0:
 
 
-
                 follower.followPath(paths.drive1, 0.7, true);
                 pathState = 1; // this needs to be set otherwise it shutters BAD
 
                 break;
             case 1:
-                if (!follower.isBusy()){
+                if (!follower.isBusy()) {
 
                     follower.followPath(paths.gotodepot1);
                     pathState = 2;
 
                 }
 
-                    break;
-
+                break;
 
 
             case 2:
-                if (!follower.isBusy()){
+                if (!follower.isBusy()) {
                     panelsTelemetry.update();
                     break;
 

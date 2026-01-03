@@ -100,7 +100,7 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
     private double CATAPULT_DOWN_POWER = 1.0;  // Need full power with 12 rubber bands. Half that amount can be adjusted to use 0.5 power.
     private double CATAPULT_HOLD_POWER = 0.2; // Only use a small amount of power to hold it down once it is down, othewise the motor will get very hot from stalling and can damage itself
 
-    private enum CatapultModes {UP, DOWN, HOLD}
+    private enum CatapultModes {UP, DOWN, HOLD, EMERGENCY}
 
     private CatapultModes pivotMode;
 
@@ -271,6 +271,19 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
                 pivotMode = CatapultModes.HOLD;
                 catapult1.setPower(CATAPULT_HOLD_POWER);
                 catapult2.setPower(CATAPULT_HOLD_POWER);
+            } else if (pivotMode == CatapultModes.EMERGENCY && pivotDownTime.time() > 0.3) {
+                pivotMode = CatapultModes.HOLD;
+                catapult1.setPower(CATAPULT_HOLD_POWER);
+                catapult2.setPower(CATAPULT_HOLD_POWER);
+            }
+
+            // Emergency catapult lower
+            if (gamepad1.right_trigger > 0.2)
+            {
+                pivotMode = CatapultModes.EMERGENCY;
+                catapult1.setPower(CATAPULT_DOWN_POWER);
+                catapult2.setPower(CATAPULT_DOWN_POWER);
+                pivotDownTime.reset();
             }
 
             intake.setPower(intakePower);
