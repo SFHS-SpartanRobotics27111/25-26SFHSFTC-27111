@@ -118,15 +118,6 @@ public class RobotRowToRowBlue extends OpMode
                 CommandManager.INSTANCE.scheduleCommand(new CatapultFireCommand(catapult, telemetry));
             };
 
-            // Empty path for just shooting
-            init_shot = follower
-                    .pathBuilder()
-                    .addParametricCallback(0.01, () -> {
-                        catapult.setPower(CatapultSubsystem.POWER_HOLD); // prevents the catapult from snapping up
-                    })
-                    .addParametricCallback(0.99, shootPhase)
-                    .build();
-
             // Each row represents robot moving to row of 3 artifacts and intaking them
             row0 = follower
                     .pathBuilder()
@@ -219,22 +210,15 @@ public class RobotRowToRowBlue extends OpMode
 
             // Initial shot with pre-loaded artifacts
             case INIT_SHOT:
-                follower.followPath(paths.init_shot, 0.7, true);
-                pathState = AutoState.INIT_SHOT_WAIT;
-                break;
-            case INIT_SHOT_WAIT:
-                if (!follower.isBusy())
-                {
-                    timer.reset();
-                    pathState = AutoState.INTAKE_0;
-                }
+                CommandManager.INSTANCE.scheduleCommand(new CatapultFireCommand(catapult, telemetry));
+                pathState = AutoState.INTAKE_0;
                 break;
 
             // ---------------------------------------------------------------------------
 
             // First intake and shot
             case INTAKE_0:
-                if (timer.time() > 1)
+                if (!CommandManager.INSTANCE.hasCommands())
                 {
                     follower.followPath(paths.row0, 0.7, true);
                     pathState = AutoState.INTAKE_0_SHOOT;
