@@ -111,7 +111,7 @@ public class RobotRowToRowBlue extends OpMode
         {
             // Defining runnables (lambda functions) externally to make things look cleaner
             Runnable intakePhase = () -> {
-                CommandManager.INSTANCE.scheduleCommand((new intakeCommand(intake, 5)));
+                CommandManager.INSTANCE.scheduleCommand((new intakeCommand(intake, 2)));
             };
 
             Runnable shootPhase = () -> {
@@ -151,8 +151,9 @@ public class RobotRowToRowBlue extends OpMode
                     .addPath(
                             new BezierCurve(
                                     new Pose(24.000, 120.000),
-                                    new Pose(80.000, 56.000),
-                                    new Pose(22.000, 56)
+                                    new Pose(64, 56),
+                                    new Pose(64, 48),
+                                    new Pose(6, 48)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
@@ -257,7 +258,7 @@ public class RobotRowToRowBlue extends OpMode
                 {
                     follower.followPath(paths.rowShoot1, 0.7, true);
                     timer.reset();
-                    pathState = AutoState.INTAKE_1_WAIT;
+                    pathState = AutoState.TELEMETRY;
                 }
                 break;
             case INTAKE_1_WAIT:
