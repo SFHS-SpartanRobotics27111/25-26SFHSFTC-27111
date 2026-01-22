@@ -23,6 +23,7 @@ import org.firstinspires.ftc.teamcode.hardware.intake.intakeCommand;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.CommandManager;
 
 @Autonomous(name = "Pedro Pathing Row to Row", group = "Autonomous")
@@ -54,6 +55,9 @@ public class RobotRowToRowBlue extends OpMode
 
         INTAKE_2,
         INTAKE_2_SHOOT,
+        INTAKE_2_WAIT,
+
+        GATE,
 
         TELEMETRY
     }
@@ -106,6 +110,7 @@ public class RobotRowToRowBlue extends OpMode
         public PathChain rowShoot1;
         public PathChain row2;
         public PathChain rowShoot2;
+        public PathChain goToGate;
 
         public Paths(Follower follower, IntakeSubsystem intake, CatapultSubsystem catapult, Telemetry telemetry)
         {
@@ -130,6 +135,12 @@ public class RobotRowToRowBlue extends OpMode
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
                     .addParametricCallback(0.5, intakePhase)
+                    .addParametricCallback(0.6, () -> {
+                        follower.setMaxPower(0.5);
+                    })
+                    .addParametricCallback(0.99, () -> {
+                        follower.setMaxPower(0.9);
+                    })
                     .build();
 
             // Each row shoot represents path robot takes to go shoot the artifacts
@@ -158,6 +169,12 @@ public class RobotRowToRowBlue extends OpMode
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
                     .addParametricCallback(0.6, intakePhase)
+                    .addParametricCallback(0.65, () -> {
+                        follower.setMaxPower(0.5);
+                    })
+                    .addParametricCallback(0.99, () -> {
+                        follower.setMaxPower(0.9);
+                    })
                     .build();
 
             rowShoot1 = follower
@@ -178,12 +195,19 @@ public class RobotRowToRowBlue extends OpMode
                     .addPath(
                             new BezierCurve(
                                     new Pose(24.000, 120.000),
-                                    new Pose(80.000, 30.000),
-                                    new Pose(22.000, 32)
+                                    new Pose(64, 30.000),
+                                    new Pose(64, 24),
+                                    new Pose(6, 24)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
                     .addParametricCallback(0.7, intakePhase)
+                    .addParametricCallback(0.75, () -> {
+                        follower.setMaxPower(0.5);
+                    })
+                    .addParametricCallback(0.99, () -> {
+                        follower.setMaxPower(0.9);
+                    })
                     .build();
 
             rowShoot2 = follower
@@ -197,6 +221,18 @@ public class RobotRowToRowBlue extends OpMode
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(135))
                     .addParametricCallback(0.99, shootPhase)
+                    .build();
+            goToGate = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierCurve(
+                                    new Pose(24, 120),
+                                    new Pose(36, 80),
+                                    new Pose(30, 75),
+                                    new Pose(30, 75)
+                            )
+                    )
+                    .setLinearHeadingInterpolation(135, 180)
                     .build();
         }
     }
@@ -221,7 +257,7 @@ public class RobotRowToRowBlue extends OpMode
             case INTAKE_0:
                 if (!CommandManager.INSTANCE.hasCommands())
                 {
-                    follower.followPath(paths.row0, 0.7, true);
+                    follower.followPath(paths.row0, 0.9, true);
                     pathState = AutoState.INTAKE_0_SHOOT;
                 }
                 break;
@@ -229,7 +265,7 @@ public class RobotRowToRowBlue extends OpMode
             case INTAKE_0_SHOOT:
                 if (!follower.isBusy())
                 {
-                    follower.followPath(paths.rowShoot0, 0.7, true);
+                    follower.followPath(paths.rowShoot0, 0.9, true);
                     timer.reset();
                     pathState = AutoState.INTAKE_0_WAIT;
                 }
@@ -248,7 +284,7 @@ public class RobotRowToRowBlue extends OpMode
             case INTAKE_1:
                 if (timer.time() > 1)
                 {
-                    follower.followPath(paths.row1, 0.7, true);
+                    follower.followPath(paths.row1, 0.9, true);
                     pathState = AutoState.INTAKE_1_SHOOT;
                 }
                 break;
@@ -256,9 +292,9 @@ public class RobotRowToRowBlue extends OpMode
             case INTAKE_1_SHOOT:
                 if (!follower.isBusy())
                 {
-                    follower.followPath(paths.rowShoot1, 0.7, true);
+                    follower.followPath(paths.rowShoot1, 0.9, true);
                     timer.reset();
-                    pathState = AutoState.TELEMETRY;
+                    pathState = AutoState.INTAKE_1_WAIT;
                 }
                 break;
             case INTAKE_1_WAIT:
@@ -275,7 +311,7 @@ public class RobotRowToRowBlue extends OpMode
             case INTAKE_2:
                 if (timer.time() > 1)
                 {
-                    follower.followPath(paths.row2, 0.7, true);
+                    follower.followPath(paths.row2, 0.9, true);
                     pathState = AutoState.INTAKE_2_SHOOT;
                 }
                 break;
@@ -283,11 +319,26 @@ public class RobotRowToRowBlue extends OpMode
             case INTAKE_2_SHOOT:
                 if (!follower.isBusy())
                 {
-                    follower.followPath(paths.rowShoot2, 0.7, true);
+                    follower.followPath(paths.rowShoot2, 0.9, true);
                     timer.reset();
-                    pathState = AutoState.TELEMETRY;
+                    pathState = AutoState.INTAKE_2_WAIT;
                 }
                 break;
+
+            case INTAKE_2_WAIT:
+                if (!follower.isBusy())
+                {
+                    timer.reset();
+                    pathState = AutoState.GATE;
+                }
+                break;
+
+            case GATE:
+                if (timer.time() > 1)
+                {
+                    follower.followPath(paths.goToGate, 0.9, true);
+                    pathState = AutoState.TELEMETRY;
+                }
 
             // ---------------------------------------------------------------------------
 
