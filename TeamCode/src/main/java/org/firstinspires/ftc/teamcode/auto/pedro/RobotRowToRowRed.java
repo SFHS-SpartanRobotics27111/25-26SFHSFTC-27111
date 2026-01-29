@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import dev.nextftc.core.commands.CommandManager;
 
-@Autonomous(name = "Pedro Pathing Row to Row", group = "Autonomous")
+@Autonomous(name = "Pedro Pathing Row to Row Red", group = "Autonomous")
 @Configurable
 public class RobotRowToRowRed extends OpMode
 {
