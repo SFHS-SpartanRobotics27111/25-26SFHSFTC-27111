@@ -168,7 +168,7 @@ public class RobotRowToRowBlue extends OpMode
                             )
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(135))
-                    .addParametricCallback(0.99, shootPhase)
+                    .addParametricCallback(0.97, shootPhase) //always shoots if this value is lower
                     .build();
 
             row1 = follower
@@ -207,7 +207,7 @@ public class RobotRowToRowBlue extends OpMode
                             )
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(135))
-                    .addParametricCallback(0.99, shootPhase)
+                    .addParametricCallback(0.97, shootPhase)
                     .build();
 
             row2 = follower
@@ -246,7 +246,7 @@ public class RobotRowToRowBlue extends OpMode
                             )
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(135))
-                    .addParametricCallback(0.99, shootPhase)
+                    .addParametricCallback(0.97, shootPhase)
                     .build();
             goToGate = follower
                     .pathBuilder()

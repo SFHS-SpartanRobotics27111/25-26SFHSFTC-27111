@@ -278,7 +278,7 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
             }
 
             // Emergency catapult lower
-            if (gamepad1.right_trigger > 0.2)
+            if (gamepad1.right_trigger > 0.25)
             {
                 pivotMode = CatapultModes.EMERGENCY;
                 catapult1.setPower(CATAPULT_DOWN_POWER);
