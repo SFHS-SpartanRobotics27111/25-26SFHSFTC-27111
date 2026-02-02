@@ -68,7 +68,7 @@ public class RobotRowToRowRed extends OpMode
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(120, 120, Math.toRadians(135)));
+        follower.setStartingPose(new Pose(120, 120, Math.toRadians(45)));
         follower.activateAllPIDFs();
 
         intake = new IntakeSubsystem(hardwareMap);
@@ -141,7 +141,7 @@ public class RobotRowToRowRed extends OpMode
                             new BezierLine(
                                     new Pose(99, 75.000),
 
-                                    new Pose(134, 75.000)
+                                    new Pose(120, 75.000)
                             )
                     ).setTangentHeadingInterpolation()
                     .addPoseCallback(new Pose(99, 75), intakePhase, 0.01)
@@ -150,7 +150,7 @@ public class RobotRowToRowRed extends OpMode
             // Each row shoot represents path robot takes to go shoot the artifacts
             rowShoot0 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(134, 74.000),
+                                    new Pose(120, 74.000),
                                     new Pose(124.964, 105.928),
                                     new Pose(122.000, 120.000)
                             )
