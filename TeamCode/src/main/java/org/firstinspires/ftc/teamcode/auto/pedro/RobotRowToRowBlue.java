@@ -26,7 +26,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.CommandManager;
 
-@Autonomous(name = "Pedro Pathing Row to Row", group = "Autonomous")
+@Autonomous(name = "Pedro Pathing Row to Row Blue", group = "Autonomous")
 @Configurable
 public class RobotRowToRowBlue extends OpMode
 {
@@ -61,6 +61,7 @@ public class RobotRowToRowBlue extends OpMode
         INTAKE_2_WAIT,
 
         GATE,
+        OPEN_GATE,
 
         TELEMETRY
     }
@@ -117,6 +118,7 @@ public class RobotRowToRowBlue extends OpMode
         public PathChain rowIntake2;
         public PathChain rowShoot2;
         public PathChain goToGate;
+        public PathChain openGate;
 
         public Paths(Follower follower, IntakeSubsystem intake, CatapultSubsystem catapult, Telemetry telemetry)
         {
@@ -162,18 +164,18 @@ public class RobotRowToRowBlue extends OpMode
                             new BezierCurve(
                                     new Pose(22.000, 80),
                                     new Pose(19.036, 105.928),
-                                    new Pose(24.000, 120.000)
+                                    new Pose(22, 120.000)
                             )
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(135))
-                    .addParametricCallback(0.99, shootPhase)
+                    .addParametricCallback(0.97, shootPhase) //always shoots if this value is lower
                     .build();
 
             row1 = follower
                     .pathBuilder()
                     .addPath(
                             new BezierCurve(
-                                    new Pose(24.000, 120.000),
+                                    new Pose(22, 120.000),
                                     new Pose(64, 56),
                                     new Pose(45, 53)
 
@@ -201,18 +203,18 @@ public class RobotRowToRowBlue extends OpMode
                             new BezierCurve(
                                     new Pose(5, 53),
                                     new Pose(59, 69),
-                                    new Pose(24.000, 120.000)
+                                    new Pose(22, 120.000)
                             )
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(135))
-                    .addParametricCallback(0.99, shootPhase)
+                    .addParametricCallback(0.97, shootPhase)
                     .build();
 
             row2 = follower
                     .pathBuilder()
                     .addPath(
                             new BezierCurve(
-                                    new Pose(24.000, 120.000),
+                                    new Pose(22, 120.000),
                                     new Pose(64.000, 30.000),
                                     new Pose(45.000, 25.000)
                             )
@@ -240,23 +242,30 @@ public class RobotRowToRowBlue extends OpMode
                             new BezierCurve(
                                     new Pose(10, 25),
                                     new Pose(31, 100),
-                                    new Pose(24.000, 120.000)
+                                    new Pose(22, 120.000)
                             )
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(135))
-                    .addParametricCallback(0.99, shootPhase)
+                    .addParametricCallback(0.97, shootPhase)
                     .build();
             goToGate = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierCurve(
-                                    new Pose(24, 120),
-                                    new Pose(36, 80),
-                                    new Pose(30, 75),
-                                    new Pose(30, 75)
+                            new BezierLine(
+                                    new Pose(22.000, 120.000),
+
+                                    new Pose(30.000, 75.000)
                             )
-                    )
-                    .setLinearHeadingInterpolation(135, 180)
+                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                    .build();
+            openGate = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(30.000, 75.000),
+
+                                    new Pose(22, 65)
+                            )
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
+
                     .build();
         }
     }
@@ -386,6 +395,13 @@ public class RobotRowToRowBlue extends OpMode
                 if (timer.time() > 1)
                 {
                     follower.followPath(paths.goToGate, 0.9, true);
+                    pathState = AutoState.OPEN_GATE;
+                }
+                break;
+            case OPEN_GATE:
+                if (timer.time() > 1)
+                {
+                    follower.followPath(paths.openGate, 0.9, true);
                     pathState = AutoState.TELEMETRY;
                 }
                 break;
