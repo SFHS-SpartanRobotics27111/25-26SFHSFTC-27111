@@ -280,6 +280,7 @@ public class RobotRowToRowBlue extends OpMode
 
             // Initial shot with pre-loaded artifacts
             case INIT_SHOT:
+                timer.reset();
                 CommandManager.INSTANCE.scheduleCommand(new CatapultFireCommand(catapult, telemetry));
                 pathState = AutoState.INTAKE_0;
                 break;
@@ -288,7 +289,8 @@ public class RobotRowToRowBlue extends OpMode
 
             // First intake and shot
             case INTAKE_0:
-                if (!CommandManager.INSTANCE.hasCommands())
+
+                if (timer.time() > 0.1)
                 {
                     follower.followPath(paths.row0, 0.9, true);
                     pathState = AutoState.INTAKE_LINE_0;
@@ -324,7 +326,7 @@ public class RobotRowToRowBlue extends OpMode
 
             // Second intake and shot
             case INTAKE_1:
-                if (timer.time() > 1)
+                if (timer.time() > 0.2)
                 {
                     follower.followPath(paths.row1, 0.9, true);
                     pathState = AutoState.INTAKE_LINE_1;
@@ -359,7 +361,7 @@ public class RobotRowToRowBlue extends OpMode
 
             // Third intake and shot
             case INTAKE_2:
-                if (timer.time() > 1)
+                if (timer.time() > 0.2)
                 {
                     follower.followPath(paths.row2, 0.9, true);
                     pathState = AutoState.INTAKE_LINE_2;
@@ -392,14 +394,14 @@ public class RobotRowToRowBlue extends OpMode
                 break;
 
             case GATE:
-                if (timer.time() > 1)
+                if (!follower.isBusy())
                 {
                     follower.followPath(paths.goToGate, 0.9, true);
                     pathState = AutoState.OPEN_GATE;
                 }
                 break;
             case OPEN_GATE:
-                if (timer.time() > 1)
+                if (!follower.isBusy())
                 {
                     follower.followPath(paths.openGate, 0.9, true);
                     pathState = AutoState.TELEMETRY;

@@ -56,6 +56,7 @@ public class RobotRowToRowRed extends OpMode
         INTAKE_2_WAIT,
 
         GATE,
+        OPEN_GATE,
 
         TELEMETRY
     }
@@ -67,7 +68,7 @@ public class RobotRowToRowRed extends OpMode
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(24, 120, Math.toRadians(135)));
+        follower.setStartingPose(new Pose(120, 120, Math.toRadians(135)));
         follower.activateAllPIDFs();
 
         intake = new IntakeSubsystem(hardwareMap);
@@ -112,6 +113,7 @@ public class RobotRowToRowRed extends OpMode
         public PathChain rowIntake2;
         public PathChain rowShoot2;
         public PathChain goToGate;
+        public PathChain openGate;
 
         public Paths(Follower follower, IntakeSubsystem intake, CatapultSubsystem catapult, Telemetry telemetry)
         {
@@ -129,7 +131,7 @@ public class RobotRowToRowRed extends OpMode
                             new BezierCurve(
                                     new Pose(120.000, 120.000),
                                     new Pose(84.000, 90.000),
-                                    new Pose(109.000, 74.000)
+                                    new Pose(99, 75.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(35), Math.toRadians(0))
 
@@ -137,40 +139,40 @@ public class RobotRowToRowRed extends OpMode
 
             rowIntake0 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(109.000, 75.000),
+                                    new Pose(99, 75.000),
 
-                                    new Pose(124.000, 75.000)
+                                    new Pose(134, 75.000)
                             )
                     ).setTangentHeadingInterpolation()
-                    .addPoseCallback(new Pose(109, 75), intakePhase, 0.01)
+                    .addPoseCallback(new Pose(99, 75), intakePhase, 0.01)
                     .build();
 
             // Each row shoot represents path robot takes to go shoot the artifacts
             rowShoot0 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(124.000, 74.000),
+                                    new Pose(134, 74.000),
                                     new Pose(124.964, 105.928),
-                                    new Pose(120.000, 120.000)
+                                    new Pose(122.000, 120.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(35))
                     .build();
 
             row1 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(120.000, 120.000),
+                                    new Pose(122.000, 120.000),
                                     new Pose(80.000, 56.000),
-                                    new Pose(99.000, 56.000)
+                                    new Pose(99.000, 53.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                     .build();
             rowIntake1 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(99.000, 56.000),
+                                    new Pose(99.000, 53.000),
 
-                                    new Pose(139.000, 56.000)
+                                    new Pose(139.000, 53.000)
                             )
                     ).setTangentHeadingInterpolation()
-                    .addPoseCallback(new Pose(99, 56), intakePhase, 0.01)
+                    .addPoseCallback(new Pose(99, 53), intakePhase, 0.01)
                     .build();
 
             rowShoot1 = follower.pathBuilder().addPath(
@@ -197,7 +199,7 @@ public class RobotRowToRowRed extends OpMode
                             new BezierLine(
                                     new Pose(99.000, 25.000),
 
-                                    new Pose(134.000, 25.000)
+                                    new Pose(141, 25.000)
                             )
                     ).setTangentHeadingInterpolation()
                     .addPoseCallback(new Pose(99, 25), intakePhase, 0.01)
@@ -207,20 +209,29 @@ public class RobotRowToRowRed extends OpMode
 
             rowShoot2 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(134.000, 25.000),
+                                    new Pose(141, 25.000),
                                     new Pose(112.982, 100.411),
-                                    new Pose(120.000, 120.000)
+                                    new Pose(122, 120.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(35))
                     .addParametricCallback(0.99, shootPhase)
                     .build();
             goToGate = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(120.000, 120.000),
+                                    new Pose(122, 120.000),
 
                                     new Pose(114.000, 75.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(35), Math.toRadians(0))
+
+                    .build();
+            openGate = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(30.000, 75.000),
+
+                                    new Pose(22, 65)
+                            )
+                    ).setConstantHeadingInterpolation(Math.toRadians(180))
 
                     .build();
         }
@@ -236,6 +247,7 @@ public class RobotRowToRowRed extends OpMode
 
             // Initial shot with pre-loaded artifacts
             case INIT_SHOT:
+                timer.reset();
                 CommandManager.INSTANCE.scheduleCommand(new CatapultFireCommand(catapult, telemetry));
                 pathState = AutoState.INTAKE_0;
                 break;
@@ -244,7 +256,7 @@ public class RobotRowToRowRed extends OpMode
 
             // First intake and shot
             case INTAKE_0:
-                if (!CommandManager.INSTANCE.hasCommands())
+                if (timer.time() > 0.2)
                 {
                     follower.followPath(paths.row0, 0.9, true);
                     pathState = AutoState.INTAKE_LINE_0;
@@ -280,7 +292,7 @@ public class RobotRowToRowRed extends OpMode
 
             // Second intake and shot
             case INTAKE_1:
-                if (timer.time() > 1)
+                if (timer.time() > 0.2)
                 {
                     follower.followPath(paths.row1, 0.9, true);
                     pathState = AutoState.INTAKE_LINE_1;
@@ -315,7 +327,7 @@ public class RobotRowToRowRed extends OpMode
 
             // Third intake and shot
             case INTAKE_2:
-                if (timer.time() > 1)
+                if (timer.time() > 0.2)
                 {
                     follower.followPath(paths.row2, 0.9, true);
                     pathState = AutoState.INTAKE_LINE_2;
@@ -348,9 +360,16 @@ public class RobotRowToRowRed extends OpMode
                 break;
 
             case GATE:
-                if (timer.time() > 1)
+                if (follower.isBusy())
                 {
                     follower.followPath(paths.goToGate, 0.9, true);
+                    pathState = AutoState.OPEN_GATE;
+                }
+                break;
+            case OPEN_GATE:
+                if (!follower.isBusy())
+                {
+                    follower.followPath(paths.openGate, 0.9, true);
                     pathState = AutoState.TELEMETRY;
                 }
                 break;
