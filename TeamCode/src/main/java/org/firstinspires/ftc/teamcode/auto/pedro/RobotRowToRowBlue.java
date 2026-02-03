@@ -182,7 +182,6 @@ public class RobotRowToRowBlue extends OpMode
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
-
                     .build();
             rowIntake1 = follower
                     .pathBuilder()
@@ -220,7 +219,6 @@ public class RobotRowToRowBlue extends OpMode
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
-
                     .build();
             rowIntake2 = follower
                     .pathBuilder()
@@ -232,8 +230,6 @@ public class RobotRowToRowBlue extends OpMode
                             )
                     ).setTangentHeadingInterpolation()
                     .addPoseCallback(new Pose(45, 30), intakePhase, 0.01)
-
-
                     .build();
 
             rowShoot2 = follower
@@ -258,14 +254,15 @@ public class RobotRowToRowBlue extends OpMode
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
                     .build();
-            openGate = follower.pathBuilder().addPath(
+            openGate = follower
+                    .pathBuilder()
+                    .addPath(
                             new BezierLine(
                                     new Pose(30.000, 75.000),
 
                                     new Pose(22, 65)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
-
                     .build();
         }
     }

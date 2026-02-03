@@ -130,10 +130,10 @@ public class RobotRowToRowRed extends OpMode
             row0 = follower.pathBuilder().addPath(
                             new BezierCurve(
                                     new Pose(120.000, 120.000),
-                                    new Pose(84.000, 90.000),
+                                    new Pose(64, 80),
                                     new Pose(99, 75.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(35), Math.toRadians(0))
+                    ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
 
                     .build();
 
@@ -141,7 +141,7 @@ public class RobotRowToRowRed extends OpMode
                             new BezierLine(
                                     new Pose(99, 75.000),
 
-                                    new Pose(120, 75.000)
+                                    new Pose(134, 75.000)
                             )
                     ).setTangentHeadingInterpolation()
                     .addPoseCallback(new Pose(99, 75), intakePhase, 0.01)
@@ -150,14 +150,17 @@ public class RobotRowToRowRed extends OpMode
             // Each row shoot represents path robot takes to go shoot the artifacts
             rowShoot0 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(120, 74.000),
+                                    new Pose(122, 80),
                                     new Pose(124.964, 105.928),
                                     new Pose(122.000, 120.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(35))
+                    ).setConstantHeadingInterpolation(Math.toRadians(45))
+                    .addParametricCallback(0.97, shootPhase)
                     .build();
 
-            row1 = follower.pathBuilder().addPath(
+            row1 = follower
+                    .pathBuilder()
+                    .addPath(
                             new BezierCurve(
                                     new Pose(122.000, 120.000),
                                     new Pose(80.000, 56.000),
@@ -165,7 +168,9 @@ public class RobotRowToRowRed extends OpMode
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                     .build();
-            rowIntake1 = follower.pathBuilder().addPath(
+            rowIntake1 = follower
+                    .pathBuilder()
+                    .addPath(
                             new BezierLine(
                                     new Pose(99.000, 53.000),
 
@@ -175,18 +180,21 @@ public class RobotRowToRowRed extends OpMode
                     .addPoseCallback(new Pose(99, 53), intakePhase, 0.01)
                     .build();
 
-            rowShoot1 = follower.pathBuilder().addPath(
+            rowShoot1 = follower
+                    .pathBuilder()
+                    .addPath(
                             new BezierCurve(
-                                    new Pose(139.000, 56.000),
-                                    new Pose(85.343, 68.821),
-                                    new Pose(120.000, 120.000)
+                                    new Pose(139.000, 53),
+                                    new Pose(85, 69),
+                                    new Pose(122, 120.000)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(45))
+                    .addParametricCallback(0.97, shootPhase)
                     .build();
 
             row2 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(120.000, 120.000),
+                                    new Pose(122, 120.000),
                                     new Pose(80.000, 30.000),
                                     new Pose(99.000, 25.000)
                             )
@@ -197,42 +205,42 @@ public class RobotRowToRowRed extends OpMode
                     .pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(99.000, 25.000),
+                                    new Pose(99.000, 30),
 
-                                    new Pose(141, 25.000)
+                                    new Pose(141, 30)
                             )
                     ).setTangentHeadingInterpolation()
-                    .addPoseCallback(new Pose(99, 25), intakePhase, 0.01)
-
-
+                    .addPoseCallback(new Pose(99, 30), intakePhase, 0.01)
                     .build();
 
             rowShoot2 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(141, 25.000),
-                                    new Pose(112.982, 100.411),
+                                    new Pose(134, 25.000),
+                                    new Pose(113, 100),
                                     new Pose(122, 120.000)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(35))
-                    .addParametricCallback(0.99, shootPhase)
+                    ).setConstantHeadingInterpolation(Math.toRadians(45))
+                    .addParametricCallback(0.97, shootPhase)
                     .build();
-            goToGate = follower.pathBuilder().addPath(
+            goToGate = follower
+                    .pathBuilder()
+                    .addPath(
                             new BezierLine(
                                     new Pose(122, 120.000),
 
                                     new Pose(114.000, 75.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(35), Math.toRadians(0))
-
+                    ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                     .build();
-            openGate = follower.pathBuilder().addPath(
+            openGate = follower
+                    .pathBuilder()
+                    .addPath(
                             new BezierLine(
-                                    new Pose(30.000, 75.000),
+                                    new Pose(114, 75.000),
 
-                                    new Pose(22, 65)
+                                    new Pose(122, 65)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(180))
-
+                    ).setConstantHeadingInterpolation(Math.toRadians(0))
                     .build();
         }
     }
@@ -360,7 +368,7 @@ public class RobotRowToRowRed extends OpMode
                 break;
 
             case GATE:
-                if (follower.isBusy())
+                if (!follower.isBusy())
                 {
                     follower.followPath(paths.goToGate, 0.9, true);
                     pathState = AutoState.OPEN_GATE;
