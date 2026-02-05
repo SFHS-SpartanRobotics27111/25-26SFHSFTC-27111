@@ -30,6 +30,9 @@ import dev.nextftc.core.commands.CommandManager;
 @Configurable
 public class RobotRowToRowBlue extends OpMode
 {
+    public float offSetX;
+    public float offSetY;
+
     public Follower follower; // Pedro Pathing follower instance
     private Paths paths; // Paths defined in the Paths class
 
@@ -73,13 +76,13 @@ public class RobotRowToRowBlue extends OpMode
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(24, 120, Math.toRadians(135)));
+        follower.setStartingPose(new Pose(24 + offSetX, 120 + offSetY, Math.toRadians(135)));
         follower.activateAllPIDFs();
 
         intake = new IntakeSubsystem(hardwareMap);
         catapult = new CatapultSubsystem(hardwareMap);
 
-        paths = new Paths(follower, intake, catapult, telemetry); // Build paths
+        paths = new Paths(follower, intake, catapult, telemetry, offSetX, offSetY); // Build paths
 
         panelsTelemetry.debug("Status", "Initialized");
         panelsTelemetry.update(telemetry);
@@ -102,6 +105,9 @@ public class RobotRowToRowBlue extends OpMode
         panelsTelemetry.debug("Y", follower.getPose().getY());
         panelsTelemetry.debug("Heading", follower.getPose().getHeading());
 
+        panelsTelemetry.debug("offsetX", offSetX);
+        panelsTelemetry.debug("offsetY",offSetY);
+
         panelsTelemetry.update(telemetry);
     }
 
@@ -120,7 +126,7 @@ public class RobotRowToRowBlue extends OpMode
         public PathChain goToGate;
         public PathChain openGate;
 
-        public Paths(Follower follower, IntakeSubsystem intake, CatapultSubsystem catapult, Telemetry telemetry)
+        public Paths(Follower follower, IntakeSubsystem intake, CatapultSubsystem catapult, Telemetry telemetry, float offX, float offY)
         {
             // Defining runnables (lambda functions) externally to make things look cleaner
             Runnable intakePhase = () -> {
@@ -131,14 +137,15 @@ public class RobotRowToRowBlue extends OpMode
                 CommandManager.INSTANCE.scheduleCommand(new CatapultFireCommand(catapult, telemetry));
             };
 
+
             // Each row represents robot moving to row of 3 artifacts and intaking them
             row0 = follower
                     .pathBuilder()
                     .addPath(
                             new BezierCurve(
-                                    new Pose(24.000, 120.000),
-                                    new Pose(80, 80),
-                                    new Pose(45, 75)
+                                    new Pose(24.000 +offX, 120.000 +offY),
+                                    new Pose(80 + offX, 80 +offY),
+                                    new Pose(45 +offX, 75 + offY)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
@@ -148,13 +155,13 @@ public class RobotRowToRowBlue extends OpMode
                     .pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(35.000, 75.000),
+                                    new Pose(35.000 +offX, 75.000 +offY),
 
-                                    new Pose(10, 75.000)
+                                    new Pose(10 +offX , 75.000 +offY)
                             )
                     )
                     .setTangentHeadingInterpolation()
-                    .addPoseCallback(new Pose(35, 75), intakePhase, 0.01)
+                    .addPoseCallback(new Pose(35 +offX, 75 +offY), intakePhase, 0.01)
                     .build();
 
             // Each row shoot represents path robot takes to go shoot the artifacts
@@ -162,9 +169,9 @@ public class RobotRowToRowBlue extends OpMode
                     .pathBuilder()
                     .addPath(
                             new BezierCurve(
-                                    new Pose(22.000, 80),
-                                    new Pose(19.036, 105.928),
-                                    new Pose(22, 120.000)
+                                    new Pose(22.000 +offX, 80 +offY),
+                                    new Pose(19.036 +offX, 105.928 +offY),
+                                    new Pose(22 +offX, 120.000 +offY)
                             )
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(135))
@@ -175,9 +182,9 @@ public class RobotRowToRowBlue extends OpMode
                     .pathBuilder()
                     .addPath(
                             new BezierCurve(
-                                    new Pose(22, 120.000),
-                                    new Pose(64, 56),
-                                    new Pose(45, 53)
+                                    new Pose(22 +offX, 120.000 +offY),
+                                    new Pose(64 +offX, 56 +offY),
+                                    new Pose(45 +offX, 53 +offY)
 
                             )
                     )
@@ -187,22 +194,22 @@ public class RobotRowToRowBlue extends OpMode
                     .pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(45, 53),
+                                    new Pose(45 +offX, 53 +offY),
 
-                                    new Pose(5, 53)
+                                    new Pose(5 +offX, 53 +offY)
                             )
                     )
                     .setTangentHeadingInterpolation()
-                    .addPoseCallback(new Pose(45, 53), intakePhase, 0.01)
+                    .addPoseCallback(new Pose(45 +offX, 53 +offY), intakePhase, 0.01)
                     .build();
 
             rowShoot1 = follower
                     .pathBuilder()
                     .addPath(
                             new BezierCurve(
-                                    new Pose(5, 53),
-                                    new Pose(59, 69),
-                                    new Pose(22, 120.000)
+                                    new Pose(5 +offX, 53 +offY),
+                                    new Pose(59 +offX, 69 +offY),
+                                    new Pose(22 +offX, 120.000 +offY)
                             )
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(135))
@@ -213,9 +220,9 @@ public class RobotRowToRowBlue extends OpMode
                     .pathBuilder()
                     .addPath(
                             new BezierCurve(
-                                    new Pose(22, 120.000),
-                                    new Pose(64.000, 30.000),
-                                    new Pose(45.000, 25.000)
+                                    new Pose(22 +offX, 120.000 +offY),
+                                    new Pose(64.000 +offX, 30.000 +offY),
+                                    new Pose(45.000 +offX, 25.000 +offY)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
@@ -224,21 +231,21 @@ public class RobotRowToRowBlue extends OpMode
                     .pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(45.000, 30),
+                                    new Pose(45.000 +offX, 30 +offY),
 
-                                    new Pose(3, 30)
+                                    new Pose(3 +offX, 30 +offY)
                             )
                     ).setTangentHeadingInterpolation()
-                    .addPoseCallback(new Pose(45, 30), intakePhase, 0.01)
+                    .addPoseCallback(new Pose(45 +offX, 30 +offY), intakePhase, 0.01)
                     .build();
 
             rowShoot2 = follower
                     .pathBuilder()
                     .addPath(
                             new BezierCurve(
-                                    new Pose(10, 25),
-                                    new Pose(31, 100),
-                                    new Pose(22, 120.000)
+                                    new Pose(10 +offX, 25 +offY),
+                                    new Pose(31 +offX, 100 +offY),
+                                    new Pose(22 +offX, 120.000 +offY)
                             )
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(135))
@@ -248,9 +255,9 @@ public class RobotRowToRowBlue extends OpMode
                     .pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(22.000, 120.000),
+                                    new Pose(22.000 +offX, 120.000 +offY),
 
-                                    new Pose(30.000, 75.000)
+                                    new Pose(30.000 +offX, 75.000 +offY)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
                     .build();
@@ -258,9 +265,9 @@ public class RobotRowToRowBlue extends OpMode
                     .pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(30.000, 75.000),
+                                    new Pose(30.000 +offX, 75.000 +offY),
 
-                                    new Pose(22, 65)
+                                    new Pose(22 +offX, 65 +offY)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(180))
                     .build();
@@ -290,6 +297,7 @@ public class RobotRowToRowBlue extends OpMode
                 if (timer.time() > 0.1)
                 {
                     follower.followPath(paths.row0, 0.9, true);
+
                     pathState = AutoState.INTAKE_LINE_0;
                 }
                 break;
