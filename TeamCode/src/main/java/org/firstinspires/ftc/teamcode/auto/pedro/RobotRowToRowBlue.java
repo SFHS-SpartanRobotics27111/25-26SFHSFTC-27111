@@ -30,8 +30,8 @@ import dev.nextftc.core.commands.CommandManager;
 @Configurable
 public class RobotRowToRowBlue extends OpMode
 {
-    public float offSetX;
-    public float offSetY;
+    public float offSetX = 0;
+    public float offSetY = 0;
 
     public Follower follower; // Pedro Pathing follower instance
     private Paths paths; // Paths defined in the Paths class
