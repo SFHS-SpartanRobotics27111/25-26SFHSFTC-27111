@@ -30,9 +30,6 @@ import dev.nextftc.core.commands.CommandManager;
 @Configurable
 public class RobotRowToRowBlue extends OpMode
 {
-    public float offSetX = 0;
-    public float offSetY = 0;
-
     public Follower follower; // Pedro Pathing follower instance
     private Paths paths; // Paths defined in the Paths class
 
@@ -76,13 +73,13 @@ public class RobotRowToRowBlue extends OpMode
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(24 + offSetX, 120 + offSetY, Math.toRadians(135)));
+        follower.setStartingPose(new Pose(24, 120, Math.toRadians(135)));
         follower.activateAllPIDFs();
 
         intake = new IntakeSubsystem(hardwareMap);
         catapult = new CatapultSubsystem(hardwareMap);
 
-        paths = new Paths(follower, intake, catapult, telemetry, offSetX, offSetY); // Build paths
+        paths = new Paths(follower, intake, catapult, telemetry); // Build paths
 
         panelsTelemetry.debug("Status", "Initialized");
         panelsTelemetry.update(telemetry);
@@ -105,15 +102,11 @@ public class RobotRowToRowBlue extends OpMode
         panelsTelemetry.debug("Y", follower.getPose().getY());
         panelsTelemetry.debug("Heading", follower.getPose().getHeading());
 
-        panelsTelemetry.debug("offsetX", offSetX);
-        panelsTelemetry.debug("offsetY",offSetY);
-
         panelsTelemetry.update(telemetry);
     }
 
     public static class Paths
     {
-        public PathChain init_shot;
         public PathChain row0;
         public PathChain rowIntake0;
         public PathChain rowShoot0;
@@ -126,7 +119,12 @@ public class RobotRowToRowBlue extends OpMode
         public PathChain goToGate;
         public PathChain openGate;
 
-        public Paths(Follower follower, IntakeSubsystem intake, CatapultSubsystem catapult, Telemetry telemetry, float offX, float offY)
+        public float offX = 0;
+        public float offY = 0;
+
+        public Pose shootPose = new Pose(22, 120, Math.toRadians(135));
+
+        public Paths(Follower follower, IntakeSubsystem intake, CatapultSubsystem catapult, Telemetry telemetry)
         {
             // Defining runnables (lambda functions) externally to make things look cleaner
             Runnable intakePhase = () -> {
@@ -171,7 +169,7 @@ public class RobotRowToRowBlue extends OpMode
                             new BezierCurve(
                                     new Pose(22.000 +offX, 80 +offY),
                                     new Pose(19.036 +offX, 105.928 +offY),
-                                    new Pose(22 +offX, 120.000 +offY)
+                                    shootPose
                             )
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(135))
@@ -209,7 +207,7 @@ public class RobotRowToRowBlue extends OpMode
                             new BezierCurve(
                                     new Pose(5 +offX, 53 +offY),
                                     new Pose(59 +offX, 69 +offY),
-                                    new Pose(22 +offX, 120.000 +offY)
+                                    shootPose
                             )
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(135))
@@ -245,7 +243,7 @@ public class RobotRowToRowBlue extends OpMode
                             new BezierCurve(
                                     new Pose(10 +offX, 25 +offY),
                                     new Pose(31 +offX, 100 +offY),
-                                    new Pose(22 +offX, 120.000 +offY)
+                                    shootPose
                             )
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(135))
