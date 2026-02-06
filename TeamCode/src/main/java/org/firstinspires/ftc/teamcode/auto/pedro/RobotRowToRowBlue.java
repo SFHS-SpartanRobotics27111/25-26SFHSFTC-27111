@@ -39,6 +39,7 @@ public class RobotRowToRowBlue extends OpMode
     private TelemetryManager panelsTelemetry; // Panels Telemetry instance
 
     private ElapsedTime timer = new ElapsedTime();
+    private ElapsedTime stuckTimer = new ElapsedTime();
 
     public enum AutoState
     {
@@ -276,6 +277,7 @@ public class RobotRowToRowBlue extends OpMode
     // Manages each part of the auto routine
     public AutoState autonomousPathUpdate()
     {
+
         switch (pathState)
         {
             // ---------------------------------------------------------------------------
@@ -297,14 +299,32 @@ public class RobotRowToRowBlue extends OpMode
                     follower.followPath(paths.row0, 0.9, true);
 
                     pathState = AutoState.INTAKE_LINE_0;
+                    stuckTimer.reset();
                 }
+                if (stuckTimer.time() > 4)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
+                }
+
                 break;
+
+
 
             case INTAKE_LINE_0:
                 if (!follower.isBusy())
                 {
                     follower.followPath(paths.rowIntake0, 0.5, true);
                     pathState = AutoState.INTAKE_0_SHOOT;
+                    timer.reset();
+                    stuckTimer.reset();
+                }
+                if (stuckTimer.time() > 3)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
                 }
 
                 break;
@@ -315,12 +335,21 @@ public class RobotRowToRowBlue extends OpMode
                     follower.followPath(paths.rowShoot0, 0.9, true);
                     timer.reset();
                     pathState = AutoState.INTAKE_0_WAIT;
+                    stuckTimer.reset();
+                }
+                if (stuckTimer.time() > 4)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
                 }
                 break;
             case INTAKE_0_WAIT:
                 if (!follower.isBusy())
                 {
                     timer.reset();
+
+                    stuckTimer.reset();
                     pathState = AutoState.INTAKE_1;
                 }
                 break;
@@ -333,13 +362,31 @@ public class RobotRowToRowBlue extends OpMode
                 {
                     follower.followPath(paths.row1, 0.9, true);
                     pathState = AutoState.INTAKE_LINE_1;
+                    timer.reset();
+                    stuckTimer.reset();
+
                 }
+                if (stuckTimer.time() > 5)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
+                }
+
                 break;
             case INTAKE_LINE_1:
                 if (!follower.isBusy())
                 {
                     follower.followPath(paths.rowIntake1, 0.5, true);
                     pathState = AutoState.INTAKE_1_SHOOT;
+                    stuckTimer.reset();
+
+                }
+                if (stuckTimer.time() > 4)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
                 }
 
                 break;
@@ -350,6 +397,14 @@ public class RobotRowToRowBlue extends OpMode
                     follower.followPath(paths.rowShoot1, 0.9, true);
                     timer.reset();
                     pathState = AutoState.INTAKE_1_WAIT;
+                    stuckTimer.reset();
+
+                }
+                if (stuckTimer.time() > 5)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
                 }
                 break;
             case INTAKE_1_WAIT:
@@ -357,6 +412,8 @@ public class RobotRowToRowBlue extends OpMode
                 {
                     timer.reset();
                     pathState = AutoState.INTAKE_2;
+                    stuckTimer.reset();
+
                 }
                 break;
 
@@ -368,6 +425,14 @@ public class RobotRowToRowBlue extends OpMode
                 {
                     follower.followPath(paths.row2, 0.9, true);
                     pathState = AutoState.INTAKE_LINE_2;
+                    stuckTimer.reset();
+
+                }
+                if (stuckTimer.time() > 6)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
                 }
                 break;
             case INTAKE_LINE_2:
@@ -375,6 +440,14 @@ public class RobotRowToRowBlue extends OpMode
                 {
                     follower.followPath(paths.rowIntake2, 0.5, true);
                     pathState = AutoState.INTAKE_2_SHOOT;
+                    stuckTimer.reset();
+
+                }
+                if (stuckTimer.time() > 4)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
                 }
 
                 break;
@@ -384,7 +457,14 @@ public class RobotRowToRowBlue extends OpMode
                 {
                     follower.followPath(paths.rowShoot2, 0.9, true);
                     timer.reset();
+                    stuckTimer.reset();
                     pathState = AutoState.INTAKE_2_WAIT;
+                }
+                if (stuckTimer.time() > 5)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
                 }
                 break;
 
@@ -392,6 +472,7 @@ public class RobotRowToRowBlue extends OpMode
                 if (!follower.isBusy())
                 {
                     timer.reset();
+                    stuckTimer.reset();
                     pathState = AutoState.GATE;
                 }
                 break;
@@ -401,6 +482,14 @@ public class RobotRowToRowBlue extends OpMode
                 {
                     follower.followPath(paths.goToGate, 0.9, true);
                     pathState = AutoState.OPEN_GATE;
+                    stuckTimer.reset();
+
+                }
+                if (stuckTimer.time() > 4)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
                 }
                 break;
             case OPEN_GATE:
@@ -408,6 +497,14 @@ public class RobotRowToRowBlue extends OpMode
                 {
                     follower.followPath(paths.openGate, 0.9, true);
                     pathState = AutoState.TELEMETRY;
+                    stuckTimer.reset();
+
+                }
+                if (stuckTimer.time() > 4)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
                 }
                 break;
 
