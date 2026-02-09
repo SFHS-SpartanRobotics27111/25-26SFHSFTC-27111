@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode.auto.pedro;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -57,6 +58,7 @@ import org.firstinspires.ftc.teamcode.teleop.TeleOpControlLinearOpMode;
  */
 
 @Autonomous(name = "Robot: Simple Shoot", group = "Robot")
+@Disabled
 public class AutoSimpleShoot extends LinearOpMode {
 
     static final double FORWARD_SPEED = 0.9;

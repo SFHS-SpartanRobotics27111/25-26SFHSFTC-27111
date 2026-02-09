@@ -11,6 +11,7 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -24,6 +25,7 @@ import dev.nextftc.core.commands.CommandManager;
 
 @Autonomous(name = "Pedro Pathing Line to Center", group = "Autonomous")
 @Configurable // Panels
+@Disabled
 public class RobotLinetoCenter extends OpMode {
 
     private TelemetryManager panelsTelemetry; // Panels Telemetry instance

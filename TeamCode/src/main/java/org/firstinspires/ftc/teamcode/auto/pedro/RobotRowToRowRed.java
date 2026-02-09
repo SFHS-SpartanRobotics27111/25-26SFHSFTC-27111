@@ -34,6 +34,7 @@ public class RobotRowToRowRed extends OpMode
     private TelemetryManager panelsTelemetry; // Panels Telemetry instance
 
     private ElapsedTime timer = new ElapsedTime();
+    private ElapsedTime stuckTimer = new ElapsedTime();
 
     public enum AutoState
     {
@@ -114,6 +115,9 @@ public class RobotRowToRowRed extends OpMode
         public PathChain rowShoot2;
         public PathChain goToGate;
         public PathChain openGate;
+        public float offX = 0;
+        public float offY = 0;
+        public Pose shootPose = new Pose(122 +offX, 120 +offY, Math.toRadians(45));
 
         public Paths(Follower follower, IntakeSubsystem intake, CatapultSubsystem catapult, Telemetry telemetry)
         {
@@ -129,9 +133,9 @@ public class RobotRowToRowRed extends OpMode
             // Each row represents robot moving to row of 3 artifacts and intaking them
             row0 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(120.000, 120.000),
-                                    new Pose(64, 80),
-                                    new Pose(99, 75.000)
+                                    new Pose(120.000 +offX, 120.000 + offY),
+                                    new Pose(64 +offX, 80 +offY),
+                                    new Pose(99 +offX, 75.000 +offY)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
 
@@ -139,20 +143,20 @@ public class RobotRowToRowRed extends OpMode
 
             rowIntake0 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(99, 75.000),
+                                    new Pose(99 +offX, 75.000 +offY),
 
-                                    new Pose(134, 75.000)
+                                    new Pose(134 +offX, 75.000 +offY)
                             )
                     ).setTangentHeadingInterpolation()
-                    .addPoseCallback(new Pose(99, 75), intakePhase, 0.01)
+                    .addPoseCallback(new Pose(99 +offX, 75 +offY), intakePhase, 0.01)
                     .build();
 
             // Each row shoot represents path robot takes to go shoot the artifacts
             rowShoot0 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(122, 80),
-                                    new Pose(124.964, 105.928),
-                                    new Pose(122.000, 120.000)
+                                    new Pose(122 +offX, 80 +offY),
+                                    new Pose(124.964 +offX, 105.928 +offY),
+                                    shootPose
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(45))
                     .addParametricCallback(0.97, shootPhase)
@@ -162,9 +166,9 @@ public class RobotRowToRowRed extends OpMode
                     .pathBuilder()
                     .addPath(
                             new BezierCurve(
-                                    new Pose(122.000, 120.000),
-                                    new Pose(80.000, 56.000),
-                                    new Pose(99.000, 53.000)
+                                    shootPose,
+                                    new Pose(80.000 +offX, 56.000 +offY),
+                                    new Pose(99.000 +offX, 53.000 +offY)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                     .build();
@@ -172,21 +176,21 @@ public class RobotRowToRowRed extends OpMode
                     .pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(99.000, 53.000),
+                                    new Pose(99.000 +offX, 53.000 +offY),
 
-                                    new Pose(139.000, 53.000)
+                                    new Pose(139.000 +offX, 53.000 +offY)
                             )
                     ).setTangentHeadingInterpolation()
-                    .addPoseCallback(new Pose(99, 53), intakePhase, 0.01)
+                    .addPoseCallback(new Pose(99 +offX, 53 +offY), intakePhase, 0.01)
                     .build();
 
             rowShoot1 = follower
                     .pathBuilder()
                     .addPath(
                             new BezierCurve(
-                                    new Pose(139.000, 53),
-                                    new Pose(85, 69),
-                                    new Pose(122, 120.000)
+                                    new Pose(139.000 +offX, 53 +offY),
+                                    new Pose(85 +offX, 69 +offY),
+                                   shootPose
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(45))
                     .addParametricCallback(0.97, shootPhase)
@@ -194,9 +198,9 @@ public class RobotRowToRowRed extends OpMode
 
             row2 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(122, 120.000),
-                                    new Pose(80.000, 30.000),
-                                    new Pose(99.000, 25.000)
+                                    shootPose,
+                                    new Pose(80.000 +offX, 30.000 +offY),
+                                    new Pose(99.000 +offX, 25.000 +offY)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
 
@@ -205,19 +209,19 @@ public class RobotRowToRowRed extends OpMode
                     .pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(99.000, 30),
+                                    new Pose(99.000 +offX, 30 +offY),
 
-                                    new Pose(141, 30)
+                                    new Pose(141 +offX, 30 +offY)
                             )
                     ).setTangentHeadingInterpolation()
-                    .addPoseCallback(new Pose(99, 30), intakePhase, 0.01)
+                    .addPoseCallback(new Pose(99 +offX, 30 +offY), intakePhase, 0.01)
                     .build();
 
             rowShoot2 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(134, 25.000),
-                                    new Pose(113, 100),
-                                    new Pose(122, 120.000)
+                                    new Pose(134 +offX, 25.000 +offY),
+                                    new Pose(113 +offX, 100 +offY),
+                                    shootPose
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(45))
                     .addParametricCallback(0.97, shootPhase)
@@ -226,9 +230,9 @@ public class RobotRowToRowRed extends OpMode
                     .pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(122, 120.000),
+                                    shootPose,
 
-                                    new Pose(114.000, 75.000)
+                                    new Pose(114.000 +offX, 75.000 +offY)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                     .build();
@@ -236,9 +240,9 @@ public class RobotRowToRowRed extends OpMode
                     .pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(114, 75.000),
+                                    new Pose(114 +offX, 75.000 +offY),
 
-                                    new Pose(122, 65)
+                                    new Pose(122 +offX, 65 +offY)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(0))
                     .build();
@@ -268,7 +272,16 @@ public class RobotRowToRowRed extends OpMode
                 {
                     follower.followPath(paths.row0, 0.9, true);
                     pathState = AutoState.INTAKE_LINE_0;
+                    stuckTimer.reset();
+
                 }
+                if (stuckTimer.time() > 4)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
+                }
+
                 break;
 
             case INTAKE_LINE_0:
@@ -276,6 +289,14 @@ public class RobotRowToRowRed extends OpMode
                 {
                     follower.followPath(paths.rowIntake0, 0.5, true);
                     pathState = AutoState.INTAKE_0_SHOOT;
+                    timer.reset();
+                    stuckTimer.reset();
+                }
+                if (stuckTimer.time() > 3)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
                 }
 
                 break;
@@ -286,12 +307,21 @@ public class RobotRowToRowRed extends OpMode
                     follower.followPath(paths.rowShoot0, 0.9, true);
                     timer.reset();
                     pathState = AutoState.INTAKE_0_WAIT;
+                    stuckTimer.reset();
+
+                }
+                if (stuckTimer.time() > 4)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
                 }
                 break;
             case INTAKE_0_WAIT:
                 if (!follower.isBusy())
                 {
                     timer.reset();
+                    stuckTimer.reset();
                     pathState = AutoState.INTAKE_1;
                 }
                 break;
@@ -304,6 +334,14 @@ public class RobotRowToRowRed extends OpMode
                 {
                     follower.followPath(paths.row1, 0.9, true);
                     pathState = AutoState.INTAKE_LINE_1;
+                    timer.reset();
+                    stuckTimer.reset();
+                }
+                if (stuckTimer.time() > 5)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
                 }
                 break;
             case INTAKE_LINE_1:
@@ -311,6 +349,13 @@ public class RobotRowToRowRed extends OpMode
                 {
                     follower.followPath(paths.rowIntake1, 0.5, true);
                     pathState = AutoState.INTAKE_1_SHOOT;
+                    stuckTimer.reset();
+                }
+                if (stuckTimer.time() > 4)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
                 }
 
                 break;
@@ -321,6 +366,13 @@ public class RobotRowToRowRed extends OpMode
                     follower.followPath(paths.rowShoot1, 0.9, true);
                     timer.reset();
                     pathState = AutoState.INTAKE_1_WAIT;
+                    stuckTimer.reset();
+                }
+                if (stuckTimer.time() > 5)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
                 }
                 break;
             case INTAKE_1_WAIT:
@@ -328,6 +380,7 @@ public class RobotRowToRowRed extends OpMode
                 {
                     timer.reset();
                     pathState = AutoState.INTAKE_2;
+                    stuckTimer.reset();
                 }
                 break;
 
@@ -339,6 +392,14 @@ public class RobotRowToRowRed extends OpMode
                 {
                     follower.followPath(paths.row2, 0.9, true);
                     pathState = AutoState.INTAKE_LINE_2;
+                    stuckTimer.reset();
+
+                }
+                if (stuckTimer.time() > 6)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
                 }
                 break;
             case INTAKE_LINE_2:
@@ -346,6 +407,13 @@ public class RobotRowToRowRed extends OpMode
                 {
                     follower.followPath(paths.rowIntake2, 0.5, true);
                     pathState = AutoState.INTAKE_2_SHOOT;
+                    stuckTimer.reset();
+                }
+                if (stuckTimer.time() > 5)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
                 }
 
                 break;
@@ -363,6 +431,7 @@ public class RobotRowToRowRed extends OpMode
                 if (!follower.isBusy())
                 {
                     timer.reset();
+                    stuckTimer.reset();
                     pathState = AutoState.GATE;
                 }
                 break;
@@ -372,6 +441,13 @@ public class RobotRowToRowRed extends OpMode
                 {
                     follower.followPath(paths.goToGate, 0.9, true);
                     pathState = AutoState.OPEN_GATE;
+                    stuckTimer.reset();
+                }
+                if (stuckTimer.time() > 4)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
                 }
                 break;
             case OPEN_GATE:
@@ -379,6 +455,13 @@ public class RobotRowToRowRed extends OpMode
                 {
                     follower.followPath(paths.openGate, 0.9, true);
                     pathState = AutoState.TELEMETRY;
+                    stuckTimer.reset();
+                }
+                if (stuckTimer.time() > 4)
+                {
+                    follower.breakFollowing();
+                    telemetry.addLine("ROBOT IS STUCK");
+                    stuckTimer.reset();
                 }
                 break;
 

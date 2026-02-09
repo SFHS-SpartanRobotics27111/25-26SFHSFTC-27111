@@ -27,9 +27,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.auto.pedro;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -58,6 +59,7 @@ import dev.nextftc.extensions.pedro.PedroComponent;
  */
 
 @Autonomous(name = "Simple Follow", group = "Robot")
+@Disabled
 public class AutoSimpleFollow extends LinearOpMode {
 
     static final double FORWARD_SPEED = 0.9;

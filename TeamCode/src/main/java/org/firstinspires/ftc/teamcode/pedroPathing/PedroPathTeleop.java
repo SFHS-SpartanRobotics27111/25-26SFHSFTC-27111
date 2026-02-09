@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import dev.nextftc.extensions.pedro.PedroComponent;
@@ -62,6 +63,7 @@ import dev.nextftc.hardware.impl.MotorEx;
  */
 
 @TeleOp(name = "Robot: Pedro Path Teleop", group = "Robot")
+@Disabled
 public class PedroPathTeleop extends NextFTCOpMode {
     {
         addComponents(
