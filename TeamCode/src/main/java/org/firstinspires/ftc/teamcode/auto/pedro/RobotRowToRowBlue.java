@@ -123,7 +123,7 @@ public class RobotRowToRowBlue extends OpMode
         public float offX = 0;
         public float offY = 0;
 
-        public Pose shootPose = new Pose(22, 120, Math.toRadians(135));
+        public Pose shootPose = new Pose(22 + offX, 120 +offY, Math.toRadians(135));
 
         public Paths(Follower follower, IntakeSubsystem intake, CatapultSubsystem catapult, Telemetry telemetry)
         {
@@ -317,7 +317,7 @@ public class RobotRowToRowBlue extends OpMode
                 {
                     follower.followPath(paths.rowIntake0, 0.5, true);
                     pathState = AutoState.INTAKE_0_SHOOT;
-                    timer.reset();
+
                     stuckTimer.reset();
                 }
                 if (stuckTimer.time() > 3)
@@ -333,7 +333,6 @@ public class RobotRowToRowBlue extends OpMode
                 if (!follower.isBusy())
                 {
                     follower.followPath(paths.rowShoot0, 0.9, true);
-                    timer.reset();
                     pathState = AutoState.INTAKE_0_WAIT;
                     stuckTimer.reset();
                 }
@@ -362,7 +361,6 @@ public class RobotRowToRowBlue extends OpMode
                 {
                     follower.followPath(paths.row1, 0.9, true);
                     pathState = AutoState.INTAKE_LINE_1;
-                    timer.reset();
                     stuckTimer.reset();
 
                 }
@@ -395,7 +393,6 @@ public class RobotRowToRowBlue extends OpMode
                 if (!follower.isBusy())
                 {
                     follower.followPath(paths.rowShoot1, 0.9, true);
-                    timer.reset();
                     pathState = AutoState.INTAKE_1_WAIT;
                     stuckTimer.reset();
 
@@ -456,7 +453,6 @@ public class RobotRowToRowBlue extends OpMode
                 if (!follower.isBusy())
                 {
                     follower.followPath(paths.rowShoot2, 0.9, true);
-                    timer.reset();
                     stuckTimer.reset();
                     pathState = AutoState.INTAKE_2_WAIT;
                 }

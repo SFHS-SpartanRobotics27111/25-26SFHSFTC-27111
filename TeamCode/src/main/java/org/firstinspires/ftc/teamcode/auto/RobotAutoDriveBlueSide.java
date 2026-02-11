@@ -55,7 +55,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @Autonomous(name="Robot: Auto Drive Blue Side Wall By Time", group="Robot")
-@Disabled
+
 public class RobotAutoDriveBlueSide extends LinearOpMode {
 
     /* Declare OpMode members. */

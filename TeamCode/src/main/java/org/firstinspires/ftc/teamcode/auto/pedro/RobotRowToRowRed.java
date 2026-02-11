@@ -189,7 +189,7 @@ public class RobotRowToRowRed extends OpMode
                     .addPath(
                             new BezierCurve(
                                     new Pose(139.000 +offX, 53 +offY),
-                                    new Pose(85 +offX, 69 +offY),
+                                    new Pose(85 +offX, 69 +offY), //bumps gate on red side only - bc of field offset between the red and the blue side
                                    shootPose
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(45))
@@ -220,7 +220,7 @@ public class RobotRowToRowRed extends OpMode
             rowShoot2 = follower.pathBuilder().addPath(
                             new BezierCurve(
                                     new Pose(134 +offX, 25.000 +offY),
-                                    new Pose(113 +offX, 100 +offY),
+                                    new Pose(107 +offX, 100 +offY),
                                     shootPose
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(45))
@@ -289,7 +289,6 @@ public class RobotRowToRowRed extends OpMode
                 {
                     follower.followPath(paths.rowIntake0, 0.5, true);
                     pathState = AutoState.INTAKE_0_SHOOT;
-                    timer.reset();
                     stuckTimer.reset();
                 }
                 if (stuckTimer.time() > 3)
@@ -305,7 +304,6 @@ public class RobotRowToRowRed extends OpMode
                 if (!follower.isBusy())
                 {
                     follower.followPath(paths.rowShoot0, 0.9, true);
-                    timer.reset();
                     pathState = AutoState.INTAKE_0_WAIT;
                     stuckTimer.reset();
 
@@ -334,7 +332,6 @@ public class RobotRowToRowRed extends OpMode
                 {
                     follower.followPath(paths.row1, 0.9, true);
                     pathState = AutoState.INTAKE_LINE_1;
-                    timer.reset();
                     stuckTimer.reset();
                 }
                 if (stuckTimer.time() > 5)
@@ -364,7 +361,6 @@ public class RobotRowToRowRed extends OpMode
                 if (!follower.isBusy())
                 {
                     follower.followPath(paths.rowShoot1, 0.9, true);
-                    timer.reset();
                     pathState = AutoState.INTAKE_1_WAIT;
                     stuckTimer.reset();
                 }
@@ -422,7 +418,6 @@ public class RobotRowToRowRed extends OpMode
                 if (!follower.isBusy())
                 {
                     follower.followPath(paths.rowShoot2, 0.9, true);
-                    timer.reset();
                     pathState = AutoState.INTAKE_2_WAIT;
                 }
                 break;
@@ -437,7 +432,7 @@ public class RobotRowToRowRed extends OpMode
                 break;
 
             case GATE:
-                if (!follower.isBusy())
+                if (timer.time() > 0.2)
                 {
                     follower.followPath(paths.goToGate, 0.9, true);
                     pathState = AutoState.OPEN_GATE;
