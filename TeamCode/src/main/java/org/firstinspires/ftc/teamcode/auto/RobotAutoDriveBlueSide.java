@@ -81,13 +81,10 @@ public class RobotAutoDriveBlueSide extends LinearOpMode {
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-
-
-
         leftFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.REVERSE);
         rightFront.setDirection(DcMotor.Direction.FORWARD);
-        rightBack.setDirection(DcMotor.Direction.FORWARD);
+        rightBack.setDirection(DcMotor.Direction.REVERSE);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");    //
@@ -100,17 +97,15 @@ public class RobotAutoDriveBlueSide extends LinearOpMode {
 
         // Step 1:  Drive forward for 3 seconds
         leftFront.setPower(FORWARD_SPEED);
-        rightFront.setPower(-FORWARD_SPEED);
-        leftBack.setPower(-FORWARD_SPEED);
+        rightFront.setPower(FORWARD_SPEED);
+        leftBack.setPower(FORWARD_SPEED);
         rightBack.setPower(FORWARD_SPEED);
         runtime.reset();
+
         while (opModeIsActive() && (runtime.seconds() < 0.8)) {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
-
-
-
         // Step 4:  Stop
         leftFront.setPower(0);
         rightFront.setPower(0);

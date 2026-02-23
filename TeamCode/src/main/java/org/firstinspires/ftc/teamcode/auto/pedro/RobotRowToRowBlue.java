@@ -90,9 +90,11 @@ public class RobotRowToRowBlue extends OpMode
         paths = new Paths(follower, intake, catapult, telemetry); // Build paths
 
         panelsTelemetry.debug("Status", "Initialized");
+
         panelsTelemetry.update(telemetry);
 
         CommandManager.INSTANCE.cancelAll();
+        gatePos = "default"; //otherwise the if statement in the state machine will have a Null pointer exception
     }
 
     @Override
@@ -102,6 +104,7 @@ public class RobotRowToRowBlue extends OpMode
         if (gamepad1.square) { gatePos = "shot0"; panelsTelemetry.debug("Position selected:", gatePos);}
         if (gamepad1.cross) { gatePos = "shot1"; panelsTelemetry.debug("Position selected:", gatePos);}
         if (gamepad1.circle) { gatePos = "shot2"; panelsTelemetry.debug("Position selected:", gatePos);}
+        panelsTelemetry.update(telemetry); // constantly update the loop
     }
 
     @Override
@@ -187,16 +190,19 @@ public class RobotRowToRowBlue extends OpMode
 
             rowGate0 = follower
                     .pathBuilder()
+                    .addPath(
+                            new BezierCurve(
+                                    new Pose(10 + offX, 75 + offY),
+                                    new Pose(30 + offX, 75 + offY),
+                                    new Pose(13 + offX, 65 + offY)
+                            )
 
-                    /*
-                     TODO: Add the correct path for opening the gate. It might be hard to get the robot to spin
-                        around and open the gate with back side, though. I would say some kind of command to just manually
-                        make the wheel motors spin so that the robot does a perfect 180 would optimal, but honestly
-                        I don't know if that would be worth a whole subsystem. If possible, maybe we could open the gate with
-                        rubber band side?
-                     */
-
+                    )
+                    .setConstantHeadingInterpolation(Math.toRadians(180))
                     .build();
+
+
+
 
             // Each row shoot represents path robot takes to go shoot the artifacts
             rowShoot0 = follower
@@ -390,8 +396,10 @@ public class RobotRowToRowBlue extends OpMode
 
             case INTAKE_0_GATE:
 
-                if (timer.time() > 0.1)
+                if (!follower.isBusy())
                 {
+                    follower.followPath(paths.rowGate0, 0.9, true);
+                    pathState = AutoState.INTAKE_0_SHOOT;
                     // TODO: follower follows gate0 path, involves the robot also rotating and backing up, may want to implement that with a callback?
                     // TODO: at some point, add a stuck timer to this path as well
                 }
