@@ -41,23 +41,30 @@ public class RobotRowToRowBlue extends OpMode
     private ElapsedTime timer = new ElapsedTime();
     private ElapsedTime stuckTimer = new ElapsedTime();
 
+    public String gatePos;
+
     public enum AutoState
     {
         INIT_SHOT,
-        INIT_SHOT_WAIT,
 
         INTAKE_0,
         INTAKE_LINE_0,
+        INTAKE_0_GATE,
+
         INTAKE_0_SHOOT,
         INTAKE_0_WAIT,
 
         INTAKE_1,
         INTAKE_LINE_1,
+        INTAKE_1_GATE,
+
         INTAKE_1_SHOOT,
         INTAKE_1_WAIT,
 
         INTAKE_2,
         INTAKE_LINE_2,
+        INTAKE_2_GATE,
+
         INTAKE_2_SHOOT,
         INTAKE_2_WAIT,
 
@@ -89,6 +96,15 @@ public class RobotRowToRowBlue extends OpMode
     }
 
     @Override
+    public void init_loop()
+    {
+        if (gamepad1.triangle) { gatePos = "shot_init"; panelsTelemetry.debug("Position selected:", gatePos); }
+        if (gamepad1.square) { gatePos = "shot0"; panelsTelemetry.debug("Position selected:", gatePos);}
+        if (gamepad1.cross) { gatePos = "shot1"; panelsTelemetry.debug("Position selected:", gatePos);}
+        if (gamepad1.circle) { gatePos = "shot2"; panelsTelemetry.debug("Position selected:", gatePos);}
+    }
+
+    @Override
     public void loop()
     {
         follower.update(); // Update Pedro Pathing
@@ -110,13 +126,19 @@ public class RobotRowToRowBlue extends OpMode
     {
         public PathChain row0;
         public PathChain rowIntake0;
+        public PathChain rowGate0;
         public PathChain rowShoot0;
+
         public PathChain row1;
         public PathChain rowIntake1;
+        public PathChain rowGate1;
         public PathChain rowShoot1;
+
         public PathChain row2;
         public PathChain rowIntake2;
+        public PathChain rowGate2;
         public PathChain rowShoot2;
+
         public PathChain goToGate;
         public PathChain openGate;
 
@@ -163,6 +185,19 @@ public class RobotRowToRowBlue extends OpMode
                     .addPoseCallback(new Pose(35 +offX, 75 +offY), intakePhase, 0.01)
                     .build();
 
+            rowGate0 = follower
+                    .pathBuilder()
+
+                    /*
+                     TODO: Add the correct path for opening the gate. It might be hard to get the robot to spin
+                        around and open the gate with back side, though. I would say some kind of command to just manually
+                        make the wheel motors spin so that the robot does a perfect 180 would optimal, but honestly
+                        I don't know if that would be worth a whole subsystem. If possible, maybe we could open the gate with
+                        rubber band side?
+                     */
+
+                    .build();
+
             // Each row shoot represents path robot takes to go shoot the artifacts
             rowShoot0 = follower
                     .pathBuilder()
@@ -202,6 +237,15 @@ public class RobotRowToRowBlue extends OpMode
                     .addPoseCallback(new Pose(45 +offX, 53 +offY), intakePhase, 0.01)
                     .build();
 
+            rowGate1 = follower
+                    .pathBuilder()
+
+                    /*
+                     TODO: Do the same for this row as well
+                     */
+
+                    .build();
+
             rowShoot1 = follower
                     .pathBuilder()
                     .addPath(
@@ -236,6 +280,15 @@ public class RobotRowToRowBlue extends OpMode
                             )
                     ).setTangentHeadingInterpolation()
                     .addPoseCallback(new Pose(45 +offX, 30 +offY), intakePhase, 0.01)
+                    .build();
+
+            rowGate2 = follower
+                    .pathBuilder()
+
+                    /*
+                     TODO: Also for this one
+                     */
+
                     .build();
 
             rowShoot2 = follower
@@ -307,16 +360,22 @@ public class RobotRowToRowBlue extends OpMode
                     telemetry.addLine("ROBOT IS STUCK");
                     stuckTimer.reset();
                 }
-
                 break;
-
-
 
             case INTAKE_LINE_0:
                 if (!follower.isBusy())
                 {
                     follower.followPath(paths.rowIntake0, 0.5, true);
-                    pathState = AutoState.INTAKE_0_SHOOT;
+
+                    // Here robot makes decision on whether it follows through ordinary path of going to shoot again, or if it opens gate
+                    if (gatePos.equals("shot_init"))
+                    {
+                        pathState = AutoState.INTAKE_0_GATE;
+                    }
+                    else
+                    {
+                        pathState = AutoState.INTAKE_0_SHOOT;
+                    }
 
                     stuckTimer.reset();
                 }
@@ -325,6 +384,16 @@ public class RobotRowToRowBlue extends OpMode
                     follower.breakFollowing();
                     telemetry.addLine("ROBOT IS STUCK");
                     stuckTimer.reset();
+                }
+
+                break;
+
+            case INTAKE_0_GATE:
+
+                if (timer.time() > 0.1)
+                {
+                    // TODO: follower follows gate0 path, involves the robot also rotating and backing up, may want to implement that with a callback?
+                    // TODO: at some point, add a stuck timer to this path as well
                 }
 
                 break;
@@ -343,13 +412,13 @@ public class RobotRowToRowBlue extends OpMode
                     stuckTimer.reset();
                 }
                 break;
+
             case INTAKE_0_WAIT:
                 if (!follower.isBusy())
                 {
                     timer.reset();
-
-                    stuckTimer.reset();
                     pathState = AutoState.INTAKE_1;
+                    stuckTimer.reset();
                 }
                 break;
 
@@ -372,11 +441,21 @@ public class RobotRowToRowBlue extends OpMode
                 }
 
                 break;
+
             case INTAKE_LINE_1:
                 if (!follower.isBusy())
                 {
                     follower.followPath(paths.rowIntake1, 0.5, true);
-                    pathState = AutoState.INTAKE_1_SHOOT;
+
+                    // Here robot makes decision on whether it follows through ordinary path of going to shoot again, or if it opens gate
+                    if (gatePos.equals("shot0"))
+                    {
+                        pathState = AutoState.INTAKE_1_GATE;
+                    }
+                    else
+                    {
+                        pathState = AutoState.INTAKE_1_SHOOT;
+                    }
                     stuckTimer.reset();
 
                 }
@@ -387,6 +466,15 @@ public class RobotRowToRowBlue extends OpMode
                     stuckTimer.reset();
                 }
 
+                break;
+
+            case INTAKE_1_GATE:
+
+                if (!follower.isBusy())
+                {
+                    // TODO: follower follows gate1 path, involves the robot also rotating and backing up, may want to implement that with a callback?
+                    // TODO: at some point, add a stuck timer to this path as well
+                }
                 break;
 
             case INTAKE_1_SHOOT:
@@ -408,9 +496,8 @@ public class RobotRowToRowBlue extends OpMode
                 if (!follower.isBusy())
                 {
                     timer.reset();
-                    pathState = AutoState.INTAKE_2;
                     stuckTimer.reset();
-
+                    pathState = AutoState.INTAKE_2;
                 }
                 break;
 
@@ -432,14 +519,22 @@ public class RobotRowToRowBlue extends OpMode
                     stuckTimer.reset();
                 }
                 break;
+
             case INTAKE_LINE_2:
                 if (!follower.isBusy())
                 {
                     follower.followPath(paths.rowIntake2, 0.5, true);
-                    pathState = AutoState.INTAKE_2_SHOOT;
+                    if (gatePos.equals("shot1"))
+                    {
+                        pathState = AutoState.INTAKE_2_GATE;
+                    }
+                    else
+                    {
+                        pathState = AutoState.INTAKE_2_SHOOT;
+                    }
                     stuckTimer.reset();
-
                 }
+
                 if (stuckTimer.time() > 4)
                 {
                     follower.breakFollowing();
@@ -447,6 +542,15 @@ public class RobotRowToRowBlue extends OpMode
                     stuckTimer.reset();
                 }
 
+                break;
+
+            case INTAKE_2_GATE:
+
+                if (!follower.isBusy())
+                {
+                    // TODO: follower follows gate2 path, involves the robot also rotating and backing up, may want to implement that with a callback?
+                    // TODO: at some point, add a stuck timer to this path as well
+                }
                 break;
 
             case INTAKE_2_SHOOT:
@@ -469,15 +573,16 @@ public class RobotRowToRowBlue extends OpMode
                 {
                     timer.reset();
                     stuckTimer.reset();
-                    pathState = AutoState.GATE;
                 }
                 break;
+
+            // ---------------------------------------------------------------------------
 
             case GATE:
                 if (!follower.isBusy())
                 {
                     follower.followPath(paths.goToGate, 0.9, true);
-                    pathState = AutoState.OPEN_GATE;
+                    pathState = AutoState.OPEN_GATE; // Did not put a open gate decision after this, that wouldn't be good for us
                     stuckTimer.reset();
 
                 }
@@ -488,6 +593,7 @@ public class RobotRowToRowBlue extends OpMode
                     stuckTimer.reset();
                 }
                 break;
+
             case OPEN_GATE:
                 if (!follower.isBusy())
                 {
