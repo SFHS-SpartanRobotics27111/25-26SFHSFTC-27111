@@ -23,8 +23,11 @@ import org.firstinspires.ftc.teamcode.hardware.intake.intakeCommand;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.time.Duration;
+
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.CommandManager;
+import dev.nextftc.core.commands.delays.Delay;
 
 @Autonomous(name = "Pedro Pathing Row to Row Blue", group = "Autonomous")
 @Configurable
@@ -212,11 +215,16 @@ public class RobotRowToRowBlue extends OpMode
                                     new Pose(22.000 +offX, 80 +offY),
                                     new Pose(19.036 +offX, 105.928 +offY),
                                     shootPose
+
+
                             )
                     )
+
+
                     .setConstantHeadingInterpolation(Math.toRadians(135))
                     .addParametricCallback(0.97, shootPhase) //always shoots if this value is lower
                     .build();
+
 
             row1 = follower
                     .pathBuilder()
@@ -245,11 +253,14 @@ public class RobotRowToRowBlue extends OpMode
 
             rowGate1 = follower
                     .pathBuilder()
-
-                    /*
-                     TODO: Do the same for this row as well
-                     */
-
+                    .addPath(
+                            new BezierCurve(
+                                    new Pose(5 + offX, 53 + offY),
+                                    new Pose(34 + offX, 69 + offY),
+                                    new Pose(13 + offX, 65 + offY)
+                            )
+                    )
+                    .setConstantHeadingInterpolation(180)
                     .build();
 
             rowShoot1 = follower
@@ -262,6 +273,7 @@ public class RobotRowToRowBlue extends OpMode
                             )
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(135))
+
                     .addParametricCallback(0.97, shootPhase)
                     .build();
 
@@ -400,7 +412,7 @@ public class RobotRowToRowBlue extends OpMode
                 {
                     follower.followPath(paths.rowGate0, 0.9, true);
                     pathState = AutoState.INTAKE_0_SHOOT;
-                    // TODO: follower follows gate0 path, involves the robot also rotating and backing up, may want to implement that with a callback?
+
                     // TODO: at some point, add a stuck timer to this path as well
                 }
 
@@ -480,7 +492,8 @@ public class RobotRowToRowBlue extends OpMode
 
                 if (!follower.isBusy())
                 {
-                    // TODO: follower follows gate1 path, involves the robot also rotating and backing up, may want to implement that with a callback?
+                    follower.followPath(paths.rowGate1, 0.9, true);
+                    pathState = AutoState.TELEMETRY;
                     // TODO: at some point, add a stuck timer to this path as well
                 }
                 break;
@@ -581,6 +594,7 @@ public class RobotRowToRowBlue extends OpMode
                 {
                     timer.reset();
                     stuckTimer.reset();
+                    pathState = AutoState.GATE;
                 }
                 break;
 
