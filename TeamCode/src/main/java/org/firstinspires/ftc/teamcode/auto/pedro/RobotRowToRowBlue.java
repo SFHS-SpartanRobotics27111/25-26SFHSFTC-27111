@@ -124,6 +124,7 @@ public class RobotRowToRowBlue extends OpMode
         panelsTelemetry.debug("X", follower.getPose().getX());
         panelsTelemetry.debug("Y", follower.getPose().getY());
         panelsTelemetry.debug("Heading", follower.getPose().getHeading());
+        panelsTelemetry.debug("time", timer.time());
 
         panelsTelemetry.update(telemetry);
     }
@@ -151,7 +152,7 @@ public class RobotRowToRowBlue extends OpMode
         public float offX = 0;
         public float offY = 0;
 
-        public Pose shootPose = new Pose(22 + offX, 120 +offY, Math.toRadians(135));
+        public Pose shootPose = new Pose(24 + offX, 118 +offY, Math.toRadians(135));
 
         public Paths(Follower follower, IntakeSubsystem intake, CatapultSubsystem catapult, Telemetry telemetry)
         {
@@ -222,7 +223,8 @@ public class RobotRowToRowBlue extends OpMode
 
 
                     .setConstantHeadingInterpolation(Math.toRadians(135))
-                    .addParametricCallback(0.97, shootPhase) //always shoots if this value is lower
+
+                    //.addParametricCallback(0.97, shootPhase) //always shoots if this value is lower
                     .build();
 
 
@@ -396,6 +398,7 @@ public class RobotRowToRowBlue extends OpMode
                     }
 
                     stuckTimer.reset();
+                    timer.reset();
                 }
                 if (stuckTimer.time() > 3)
                 {
@@ -419,10 +422,14 @@ public class RobotRowToRowBlue extends OpMode
                 break;
 
             case INTAKE_0_SHOOT:
+                timer.reset();
                 if (!follower.isBusy())
                 {
+                    timer.reset();
                     follower.followPath(paths.rowShoot0, 0.9, true);
+                    timer.reset();
                     pathState = AutoState.INTAKE_0_WAIT;
+
                     stuckTimer.reset();
                 }
                 if (stuckTimer.time() > 4)
@@ -434,8 +441,11 @@ public class RobotRowToRowBlue extends OpMode
                 break;
 
             case INTAKE_0_WAIT:
-                if (!follower.isBusy())
+                //timer.reset();
+                if (timer.time() > 2)
                 {
+
+                   CommandManager.INSTANCE.scheduleCommand(new CatapultFireCommand(catapult, telemetry));
                     timer.reset();
                     pathState = AutoState.INTAKE_1;
                     stuckTimer.reset();
