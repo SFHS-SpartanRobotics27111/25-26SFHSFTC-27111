@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.OmniDrive;
@@ -92,7 +93,7 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
     private double intakePower = INTAKE_OFF_POWER;
 
     private double FOOT_UP_POWER = 0.2;
-    private double FOOT_DOWN_POWER = -0.6;
+    private double FOOT_DOWN_POWER = -0.8;
     private double FOOT_OFF_POWER = 0.0;
     private double footPower = FOOT_OFF_POWER;
 
@@ -110,6 +111,11 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
     private enum FootMode {UP, DOWN, BRAKE}
 
     private FootMode footmode;
+
+    public final double FOOT_COLLAPSED_IN = 0;
+    public final double FOOT_EXTENDED_OUT = -2257;
+    double footPosition = (int) FOOT_COLLAPSED_IN;
+
 
     /*
      * Code to run ONCE when the driver hits INIT (same as previous year's init())
@@ -181,8 +187,11 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
         catapult1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         catapult2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         catapult2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        foot.setTargetPosition((int) FOOT_COLLAPSED_IN);
+
+
+        foot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         foot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        foot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // set direction of subsystem motors
         intake.setDirection(DcMotor.Direction.FORWARD); // Forward should INTAKE.
@@ -247,8 +256,13 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
             // FOOT CODE
             if (footOutButton) {
                 footmode = FootMode.DOWN;
+
+                foot.setTargetPosition((int) FOOT_EXTENDED_OUT);
+                foot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 footPower = FOOT_DOWN_POWER;
+
             } else if (footUpButton) {
+                foot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 footmode = FootMode.UP;
                 footPower = FOOT_UP_POWER;
             } else if (footOffButton) {
@@ -311,6 +325,7 @@ public class TeleOpControlLinearOpMode extends LinearOpMode {
             telemetry.addData("Catapult2 Position/power", "%d, %4.2f",
                     catapult2.getCurrentPosition(), catapult2.getPower());
             telemetry.addData("Catapult MODE", "%s", catapult_mode_str);
+            telemetry.addData("FOOT POSITION", "%s", foot.getCurrentPosition());
 
             telemetry.update();
         }
